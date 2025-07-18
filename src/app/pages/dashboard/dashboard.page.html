@@ -1,0 +1,400 @@
+<ion-header class="bg-gradient-to-r from-emerald-500 to-blue-600">
+  <ion-toolbar color="transparent">
+    <div class="flex items-center justify-between px-4 py-2">
+      <div class="flex items-center space-x-3">
+        <div class="bg-white/20 rounded-full p-2">
+          <ion-icon name="wallet-outline" class="text-white text-xl"></ion-icon>
+        </div>
+        <div>
+          <h1 class="text-white font-bold text-lg">KasKita</h1>
+          <p class="text-white/80 text-sm">{{greetingMessage}}, {{currentUser?.name}}</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-2">
+        <button 
+          (click)="refreshData()" 
+          class="bg-white/20 rounded-full p-2 hover:bg-white/30 transition-colors">
+          <ion-icon name="refresh-outline" class="text-white text-xl"></ion-icon>
+        </button>
+        <button 
+          (click)="navigateToSettings()" 
+          class="bg-white/20 rounded-full p-2 hover:bg-white/30 transition-colors">
+          <ion-icon name="settings-outline" class="text-white text-xl"></ion-icon>
+        </button>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bg-gray-50">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="flex flex-col items-center justify-center min-h-96 space-y-4">
+    <ion-spinner name="crescent" class="text-emerald-600 w-12 h-12"></ion-spinner>
+    <p class="text-gray-600">Memuat data dashboard...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!isLoading && dashboardData" class="py-10 bg-surface-default min-h-screen">
+    
+    <!-- Balance Card -->
+    <div class="px-4 -mt-6 mb-6">
+      <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-gray-700 font-semibold text-lg">Total Saldo</h2>
+          <button 
+            (click)="toggleBalanceVisibility()" 
+            class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+            <ion-icon 
+              [name]="showBalance ? 'eye-outline' : 'eye-off-outline'" 
+              class="text-gray-500 text-xl">
+            </ion-icon>
+          </button>
+        </div>
+        <div class="mb-4">
+          <p class="text-3xl font-bold text-gray-900" *ngIf="showBalance">
+            {{formatCurrency(dashboardData.totalBalance)}}
+          </p>
+          <p class="text-3xl font-bold text-gray-900" *ngIf="!showBalance">
+            ••••••••
+          </p>
+          <p class="text-gray-500 text-sm mt-1">Saldo keseluruhan akun</p>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="flex space-x-3">
+          <button 
+            (click)="navigateToAddTransaction()" 
+            class="flex-1 bg-emerald-600 text-white py-3 px-4 rounded-xl font-semibold hover:bg-emerald-700 transition-colors flex items-center justify-center space-x-2">
+            <ion-icon name="add-outline" class="text-lg"></ion-icon>
+            <span>Tambah</span>
+          </button>
+          <button 
+            (click)="navigateToTransactions()" 
+            class="flex-1 bg-gray-100 text-gray-700 py-3 px-4 rounded-xl font-semibold hover:bg-gray-200 transition-colors flex items-center justify-center space-x-2">
+            <ion-icon name="time-outline" class="text-lg"></ion-icon>
+            <span>Riwayat</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Monthly Summary -->
+    <div class="px-4 mb-6">
+      <h3 class="text-lg font-bold text-gray-900 mb-4">Ringkasan Bulan Ini</h3>
+      <div class="grid grid-cols-1 gap-4">
+        <!-- Income Card -->
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl shadow-md p-4 border border-green-100">
+          <div class="flex items-center space-x-3">
+            <div class="bg-green-100 rounded-lg p-2">
+              <ion-icon name="trending-up-outline" class="text-green-600 text-lg"></ion-icon>
+            </div>
+            <div>
+              <p class="text-gray-600 text-sm">Pemasukan</p>
+              <p class="text-lg font-bold text-gray-900" *ngIf="showBalance">
+                {{formatCurrency(dashboardData.monthlyIncome)}}
+              </p>
+              <p class="text-lg font-bold text-gray-900" *ngIf="!showBalance">••••••</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Expense Card -->
+        <div class="bg-gradient-to-br from-red-50 to-pink-50 rounded-xl shadow-md p-4 border border-red-100">
+          <div class="flex items-center space-x-3">
+            <div class="bg-red-100 rounded-lg p-2">
+              <ion-icon name="trending-down-outline" class="text-red-600 text-lg"></ion-icon>
+            </div>
+            <div>
+              <p class="text-gray-600 text-sm">Pengeluaran</p>
+              <p class="text-lg font-bold text-gray-900" *ngIf="showBalance">
+                {{formatCurrency(dashboardData.monthlyExpense)}}
+              </p>
+              <p class="text-lg font-bold text-gray-900" *ngIf="!showBalance">••••••</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Budget Progress -->
+    <div class="px-4 mb-6">
+      <div class="bg-white rounded-xl shadow-md p-4 border border-gray-100">
+        <div class="flex items-center justify-between mb-3">
+          <h4 class="text-gray-900 font-semibold">Budget Bulanan</h4>
+          <button 
+            (click)="navigateToBudgets()" 
+            class="text-emerald-600 text-sm font-medium hover:text-emerald-700">
+            Lihat Detail
+          </button>
+        </div>
+        
+        <div class="mb-3">
+          <div class="flex justify-between text-sm mb-2">
+            <span class="text-gray-600">Terpakai: {{budgetPercentage.toFixed(0)}}%</span>
+            <span class="text-gray-900 font-medium" *ngIf="showBalance">
+              {{formatCurrency(dashboardData.monthlyExpense)}} / {{formatCurrency(dashboardData.monthlyBudget)}}
+            </span>
+            <span class="text-gray-900 font-medium" *ngIf="!showBalance">•••• / ••••</span>
+          </div>
+          
+          <!-- Progress Bar -->
+          <div class="w-full bg-gray-200 rounded-full h-3">
+            <div 
+              class="h-3 rounded-full transition-all duration-300"
+              [class.bg-green-500]="budgetStatus === 'good'"
+              [class.bg-yellow-500]="budgetStatus === 'warning'"
+              [class.bg-red-500]="budgetStatus === 'danger'"
+              [style.width.%]="budgetPercentage > 100 ? 100 : budgetPercentage">
+            </div>
+          </div>
+        </div>
+
+        <!-- Budget Status -->
+        <div class="flex items-center space-x-2">
+          <div 
+            class="w-2 h-2 rounded-full"
+            [class.bg-green-500]="budgetStatus === 'good'"
+            [class.bg-yellow-500]="budgetStatus === 'warning'"
+            [class.bg-red-500]="budgetStatus === 'danger'">
+          </div>
+          <span 
+            class="text-sm font-medium"
+            [class.text-green-600]="budgetStatus === 'good'"
+            [class.text-yellow-600]="budgetStatus === 'warning'"
+            [class.text-red-600]="budgetStatus === 'danger'">
+            <span *ngIf="budgetStatus === 'good'">Budget terkendali</span>
+            <span *ngIf="budgetStatus === 'warning'">Mendekati batas budget</span>
+            <span *ngIf="budgetStatus === 'danger'">Melebihi budget!</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Budget Alerts -->
+    <div class="px-4 mb-6" *ngIf="dashboardData.budgetAlerts.length > 0">
+      <h3 class="text-lg font-bold text-gray-900 mb-4">Peringatan Budget</h3>
+      <div class="space-y-3">
+        <div 
+          *ngFor="let alert of dashboardData.budgetAlerts" 
+          class="bg-white rounded-xl shadow-md p-4 border-l-4"
+          [class.border-yellow-500]="alert.alertLevel === 'warning'"
+          [class.border-red-500]="alert.alertLevel === 'danger'">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="font-semibold text-gray-900">{{alert.categoryName}}</p>
+              <p class="text-sm text-gray-600" *ngIf="showBalance">
+                {{formatCurrency(alert.spentAmount)}} / {{formatCurrency(alert.budgetAmount)}}
+              </p>
+              <p class="text-sm text-gray-600" *ngIf="!showBalance">•••• / ••••</p>
+            </div>
+            <div class="text-right">
+              <span 
+                class="text-lg font-bold"
+                [class.text-yellow-600]="alert.alertLevel === 'warning'"
+                [class.text-red-600]="alert.alertLevel === 'danger'">
+                {{alert.percentage}}%
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Transactions - IMPROVED DESIGN -->
+    <div class="px-4 mb-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-bold text-gray-900">Transaksi Terbaru</h3>
+        <button 
+          (click)="navigateToTransactions()" 
+          class="text-emerald-600 text-sm font-medium hover:text-emerald-700 flex items-center space-x-1">
+          <span>Lihat Semua</span>
+          <ion-icon name="chevron-forward-outline" class="text-xs"></ion-icon>
+        </button>
+      </div>
+      
+      <!-- Enhanced Transaction Cards -->
+      <div class="space-y-3">
+        <div 
+          *ngFor="let transaction of dashboardData.recentTransactions; let i = index" 
+          class="bg-white rounded-2xl shadow-md border border-gray-100 p-4 hover:shadow-lg hover:border-gray-200 transition-all duration-300 transform hover:-translate-y-1"
+          [class.cursor-pointer]="true">
+          
+          <!-- Transaction Header -->
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center space-x-3">
+              <div 
+                class="w-12 h-12 rounded-2xl flex items-center justify-center shadow-sm transition-transform duration-200 hover:scale-105"
+                [style.background-color]="transaction.category.color + '15'">
+                <ion-icon
+                  [name]="transaction.category.icon" 
+                  class="text-xl"
+                  [style.color]="transaction.category.color">
+                </ion-icon>
+              </div>
+              
+              <div class="flex-1">
+                <h4 class="text-gray-900 font-semibold text-base leading-tight">
+                  {{transaction.description}}
+                </h4>
+                <p class="text-gray-500 text-sm mt-1">
+                  {{transaction.category.name}}
+                </p>
+              </div>
+            </div>
+            
+            <!-- Amount Badge -->
+            <div class="text-right">
+              <div 
+                class="px-3 py-1 rounded-full text-sm font-bold"
+                [class.bg-green-100]="transaction.type === 'income'"
+                [class.text-green-700]="transaction.type === 'income'"
+                [class.bg-red-100]="transaction.type === 'expense'"
+                [class.text-red-700]="transaction.type === 'expense'"
+                [class.bg-blue-100]="transaction.type === 'transfer'"
+                [class.text-blue-700]="transaction.type === 'transfer'"
+                *ngIf="showBalance">
+                <span *ngIf="transaction.type === 'income'">+</span>
+                <span *ngIf="transaction.type === 'expense'">-</span>
+                {{formatCurrency(transaction.amount)}}
+              </div>
+              
+              <!-- Hidden Amount State -->
+              <div 
+                class="px-3 py-1 rounded-full text-sm font-bold bg-gray-100 text-gray-500"
+                *ngIf="!showBalance">
+                ••••••
+              </div>
+            </div>
+          </div>
+          
+          <!-- Transaction Details -->
+          <div class="flex items-center justify-between pt-3 border-t border-gray-50">
+            <div class="flex items-center space-x-4 text-xs text-gray-500">
+              <div class="flex items-center space-x-1">
+                <ion-icon name="card-outline" class="text-xs"></ion-icon>
+                <span>{{transaction.account}}</span>
+              </div>
+              <div class="flex items-center space-x-1">
+                <ion-icon name="time-outline" class="text-xs"></ion-icon>
+                <span>{{getTimeAgo(transaction.date)}}</span>
+              </div>
+            </div>
+            
+            <!-- Transaction Type Icon -->
+            <div class="flex items-center space-x-1">
+              <ion-icon 
+                name="chevron-forward-outline" 
+                class="text-gray-400 text-sm hover:text-emerald-600 transition-colors">
+              </ion-icon>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Empty State -->
+        <div 
+          *ngIf="!dashboardData.recentTransactions || dashboardData.recentTransactions.length === 0"
+          class="bg-white rounded-2xl shadow-md border border-gray-100 p-8 text-center">
+          <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <ion-icon name="receipt-outline" class="text-gray-400 text-2xl"></ion-icon>
+          </div>
+          <h4 class="text-gray-900 font-semibold mb-2">Belum ada transaksi</h4>
+          <p class="text-gray-500 text-sm mb-4">Tambahkan transaksi pertama Anda</p>
+          <button 
+            (click)="navigateToAddTransaction()"
+            class="bg-emerald-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-emerald-700 transition-colors">
+            Tambah Transaksi
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Categories -->
+    <div class="px-4 mb-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-bold text-gray-900">Kategori Teratas</h3>
+        <button 
+          (click)="navigateToReports()" 
+          class="text-emerald-600 text-sm font-medium hover:text-emerald-700">
+          Lihat Laporan
+        </button>
+      </div>
+      
+      <div class="bg-white rounded-xl shadow-md p-4 border border-gray-100">
+        <div class="space-y-4">
+          <div 
+            *ngFor="let category of dashboardData.topCategories" 
+            class="flex items-center space-x-4">
+            <div 
+              class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+              [style.background-color]="category.color + '20'">
+              <ion-icon 
+                [name]="category.icon" 
+                class="text-lg"
+                [style.color]="category.color">
+              </ion-icon>
+            </div>
+            
+            <div class="flex-1">
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-gray-900 font-medium">{{category.name}}</span>
+                <span class="text-gray-900 font-semibold" *ngIf="showBalance">
+                  {{formatCurrency(category.totalAmount)}}
+                </span>
+                <span class="text-gray-900 font-semibold" *ngIf="!showBalance">••••••</span>
+              </div>
+              
+              <div class="flex items-center space-x-2">
+                <div class="flex-1 bg-gray-200 rounded-full h-2">
+                  <div 
+                    class="h-2 rounded-full transition-all duration-300"
+                    [style.background-color]="category.color"
+                    [style.width.%]="category.percentage">
+                  </div>
+                </div>
+                <span class="text-sm text-gray-500 font-medium">{{category.percentage}}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <ion-toast
+    [isOpen]="showToast"
+    [message]="toastMessage"
+    [duration]="3000"
+    [color]="toastColor"
+    position="top"
+    (didDismiss)="showToast = false">
+  </ion-toast>
+</ion-content>
+
+<style>
+  /* Custom styles for enhanced transaction cards */
+  .transaction-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .transaction-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .category-icon-wrapper {
+    transition: transform 0.2s ease;
+  }
+  
+  .transaction-card:hover .category-icon-wrapper {
+    transform: scale(1.05);
+  }
+  
+  .amount-badge {
+    transition: all 0.2s ease;
+  }
+  
+  .transaction-card:hover .amount-badge {
+    transform: scale(1.02);
+  }
+</style>

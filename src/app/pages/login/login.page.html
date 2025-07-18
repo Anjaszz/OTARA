@@ -1,0 +1,119 @@
+<ion-content class="bg-gradient-to-br from-emerald-400 to-blue-500 min-h-screen">
+  <div class="flex flex-col min-h-screen bg-surface-drop px-6 py-8 text-text-subtle">
+    
+    <!-- Logo and Welcome Section -->
+    <div class="text-center mb-8">
+      <div class="flex justify-center mb-4">
+        <div class="bg-tint-green-subtle h-32 w-32 rounded-full overflow-hidden shadow-lg">
+        <img src="assets/otara.png" alt="">
+        </div>
+      </div>
+      <p class="text-lg ">Bersama <span class="font-bold text-blue-600">Otara</span>, Semua Bisa Jadi Ahli</p>
+    </div>
+
+    <!-- Login Form -->
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-6 mt-8">
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4">
+        
+        <!-- Email Field -->
+        <div class="space-y-2">
+          <label class="text-gray-700 font-medium text-sm">Email</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+              </svg>
+            </div>
+            <input
+              formControlName="email"
+              type="email"
+              placeholder="Masukkan email Anda"
+              class="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-full focus:outline-none focus:border-emerald-500 transition-colors"
+              [class.border-red-500]="email?.invalid && email?.touched">
+          </div>
+          <div *ngIf="email?.invalid && email?.touched" class="text-red-500 text-xs mt-1">
+            <span *ngIf="email?.errors?.['required']">Email wajib diisi</span>
+            <span *ngIf="email?.errors?.['email']">Format email tidak valid</span>
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="space-y-2">
+          <label class="text-gray-700 font-medium text-sm">Password</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+              </svg>
+            </div>
+            <input
+              formControlName="password"
+              [type]="showPassword ? 'text' : 'password'"
+              placeholder="Masukkan password Anda"
+              class="w-full pl-10 pr-12 py-3 border-2 border-gray-200 rounded-full focus:outline-none focus:border-emerald-500 transition-colors"
+              [class.border-red-500]="password?.invalid && password?.touched">
+            <button 
+              type="button"
+              (click)="togglePassword()"
+              class="absolute inset-y-0 right-0 pr-3 flex items-center">
+              <svg *ngIf="!showPassword" class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+              </svg>
+              <svg *ngIf="showPassword" class="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>
+              </svg>
+            </button>
+          </div>
+          <div *ngIf="password?.invalid && password?.touched" class="text-red-500 text-xs mt-1">
+            <span *ngIf="password?.errors?.['required']">Password wajib diisi</span>
+            <span *ngIf="password?.errors?.['minlength']">Password minimal 6 karakter</span>
+          </div>
+        </div>
+
+        <!-- Remember Me & Forgot Password -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <input 
+              formControlName="rememberMe" 
+              type="checkbox" 
+              id="rememberMe"
+              class="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded ">
+            <label for="rememberMe" class="ml-2 text-gray-600 text-sm">Ingat saya</label>
+          </div>
+          <button 
+            type="button" 
+            (click)="forgotPassword()"
+            class="text-blue-600 text-sm font-medium hover:text-blue-700">
+            Lupa password?
+          </button>
+        </div>
+
+        <!-- Login Button -->
+        <button 
+          type="submit" 
+          [disabled]="isLoading"
+          class="w-full bg-bold-blue-default hover:bg-bold-blue-subtle text-white font-semibold py-3 px-6 rounded-full transition-colors duration-200 flex items-center justify-center mt-6">
+          <ion-spinner *ngIf="isLoading" name="crescent" class="mr-2"></ion-spinner>
+          <span *ngIf="!isLoading">Masuk</span>
+          <span *ngIf="isLoading">Sedang masuk...</span>
+        </button>
+      </form>
+      <div class="mt-4">
+        <p class="text-sm">Belum punya akun? <span (click)="navigateToRegister()" class="text-text-primary font-semibold underline hover:text-text-primary-tint">Daftar disini</span></p>
+      </div>
+    </div>
+
+
+  </div>
+
+  <!-- Toast Notification -->
+  <ion-toast
+    [isOpen]="showToast"
+    [message]="toastMessage"
+    [duration]="3000"
+    [color]="toastColor"
+    position="top"
+    (didDismiss)="showToast = false">
+  </ion-toast>
+</ion-content>

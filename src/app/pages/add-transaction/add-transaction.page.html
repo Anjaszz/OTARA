@@ -1,0 +1,413 @@
+<ion-header class="bg-gradient-to-r from-emerald-500 to-blue-600">
+  <ion-toolbar color="transparent">
+    <div class="flex items-center justify-between px-4 py-3">
+      <div class="flex items-center space-x-3">
+        <button 
+          (click)="goBack()" 
+          class="bg-white/20 rounded-full p-2 hover:bg-white/30 transition-all duration-200 active:scale-95">
+          <ion-icon name="arrow-back-outline" class="text-white text-xl"></ion-icon>
+        </button>
+        <div>
+          <h1 class="text-white font-bold text-lg">Tambah Transaksi</h1>
+          <p class="text-white/80 text-sm">Catat transaksi baru</p>
+        </div>
+      </div>
+      <button 
+        (click)="resetForm()" 
+        class="bg-white/20 rounded-full p-2 hover:bg-white/30 transition-all duration-200 active:scale-95">
+        <ion-icon name="refresh-outline" class="text-white text-xl"></ion-icon>
+      </button>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bg-gray-50">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="flex flex-col items-center justify-center min-h-96 space-y-4">
+    <div class="w-16 h-16 bg-white rounded-2xl shadow-lg flex items-center justify-center">
+      <ion-spinner name="crescent" class="text-emerald-600 w-8 h-8"></ion-spinner>
+    </div>
+    <p class="text-gray-600 font-medium">Memuat data kategori...</p>
+  </div>
+
+  <!-- Main Form -->
+  <div *ngIf="!isLoading" class="py-8 min-h-screen bg-surface-default">
+    <form [formGroup]="transactionForm" (ngSubmit)="onSubmit()" class="space-y-4">
+      
+      <!-- Transaction Type Selection -->
+      <div class="px-4 -mt-4 mb-6">
+        <div class="bg-white rounded-3xl shadow-lg p-5 border border-gray-100">
+          <h3 class="text-gray-900 font-bold text-lg mb-5">Jenis Transaksi</h3>
+          <div class="grid grid-cols-3 gap-3">
+            <button
+              *ngFor="let type of transactionTypes"
+              type="button"
+              (click)="selectType(type.value)"
+              class="flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all duration-200 active:scale-95"
+              [class.border-emerald-500]="selectedType === type.value"
+              [class.bg-emerald-50]="selectedType === type.value"
+              [class.shadow-md]="selectedType === type.value"
+              [class.border-gray-200]="selectedType !== type.value"
+              [class.bg-white]="selectedType !== type.value">
+              
+              <div 
+                class="w-12 h-12 rounded-xl flex items-center justify-center mb-3 transition-all duration-200"
+                [ngClass]="selectedType === type.value ? 'bg-emerald-100 scale-110' : type.bgColor">
+                <ion-icon 
+                  [name]="type.icon" 
+                  class="text-xl"
+                  [ngClass]="selectedType === type.value ? 'text-emerald-600' : type.color">
+                </ion-icon>
+              </div>
+              <span 
+                class="text-xs font-semibold text-center"
+                [ngClass]="selectedType === type.value ? 'text-emerald-700' : 'text-gray-700'">
+                {{type.label}}
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Amount Section -->
+      <div class="px-4 mb-6">
+        <div class="bg-white rounded-3xl shadow-lg p-6 border border-gray-100">
+          <label class="text-gray-700 font-bold text-lg mb-4 block flex items-center space-x-2">
+            <ion-icon name="wallet-outline" class="text-emerald-600"></ion-icon>
+            <span>Jumlah</span>
+          </label>
+          <div class="relative">
+            <div class="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-500 font-bold text-xl">
+              Rp
+            </div>
+            <input
+              type="text"
+              placeholder="0"
+              (input)="formatCurrency($event)"
+              class="w-full pl-16 pr-6 py-5 text-3xl font-bold text-gray-900 bg-gray-50 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 placeholder-gray-400"
+              [class.border-red-400]="amount?.invalid && amount?.touched"
+              [class.bg-red-50]="amount?.invalid && amount?.touched">
+          </div>
+          <div *ngIf="amount?.invalid && amount?.touched" class="flex items-center space-x-2 text-red-500 text-sm mt-3 bg-red-50 p-3 rounded-xl">
+            <ion-icon name="alert-circle-outline" class="text-lg"></ion-icon>
+            <div>
+              <span *ngIf="amount?.errors?.['required']">Jumlah wajib diisi</span>
+              <span *ngIf="amount?.errors?.['min']">Jumlah harus lebih dari 0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category Selection -->
+      <div class="px-4 mb-6">
+        <div class="bg-white rounded-3xl shadow-lg p-6 border border-gray-100">
+          <label class="text-gray-700 font-bold text-lg mb-4 block flex items-center space-x-2">
+            <ion-icon name="grid-outline" class="text-emerald-600"></ion-icon>
+            <span>Kategori</span>
+          </label>
+          
+          <div class="grid grid-cols-1 gap-3 max-h-64 overflow-y-auto custom-scrollbar">
+            <button
+              *ngFor="let cat of filteredCategories"
+              type="button"
+              (click)="transactionForm.patchValue({category: cat._id})"
+              class="flex items-center space-x-4 p-4 rounded-2xl border-2 transition-all duration-200 text-left active:scale-98"
+              [class.border-emerald-500]="category?.value === cat._id"
+              [class.bg-emerald-50]="category?.value === cat._id"
+              [class.shadow-md]="category?.value === cat._id"
+              [class.border-gray-200]="category?.value !== cat._id"
+              [class.bg-gray-50]="category?.value !== cat._id">
+              
+              <div 
+                class="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 transition-transform duration-200"
+                [class.scale-110]="category?.value === cat._id"
+                [style.background-color]="cat.color + '20'">
+                <ion-icon
+                  [name]="cat.icon" 
+                  class="text-xl"
+                  [style.color]="cat.color">
+                </ion-icon>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="font-semibold text-gray-900 text-base">{{cat.name}}</p>
+                <p class="text-sm text-gray-500 mt-1">
+                  {{cat.type === 'income' ? 'Pemasukan' : 'Pengeluaran'}}
+                </p>
+              </div>
+              <div *ngIf="category?.value === cat._id" class="text-emerald-600">
+                <ion-icon name="checkmark-circle" class="text-xl"></ion-icon>
+              </div>
+            </button>
+          </div>
+          
+          <!-- Empty State -->
+          <div *ngIf="filteredCategories.length === 0" class="text-center py-8">
+            <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <ion-icon name="grid-outline" class="text-gray-400 text-2xl"></ion-icon>
+            </div>
+            <p class="text-gray-500 font-medium">
+              Tidak ada kategori untuk {{selectedType === 'income' ? 'pemasukan' : selectedType === 'expense' ? 'pengeluaran' : 'transfer'}}
+            </p>
+          </div>
+          
+          <div *ngIf="category?.invalid && category?.touched" class="flex items-center space-x-2 text-red-500 text-sm mt-3 bg-red-50 p-3 rounded-xl">
+            <ion-icon name="alert-circle-outline" class="text-lg"></ion-icon>
+            <span>Kategori wajib dipilih</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="px-4 mb-6">
+        <div class="bg-white rounded-3xl shadow-lg p-6 border border-gray-100">
+          <label class="text-gray-700 font-bold text-lg mb-4 block flex items-center space-x-2">
+            <ion-icon name="document-text-outline" class="text-emerald-600"></ion-icon>
+            <span>Deskripsi</span>
+          </label>
+          <div class="relative">
+            <textarea
+              formControlName="description"
+              rows="4"
+              placeholder="Masukkan deskripsi transaksi..."
+              class="w-full pl-14 pr-4 py-4 text-text-subtle text-base bg-gray-50 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 placeholder-gray-400 resize-none"
+              [class.border-red-400]="description?.invalid && description?.touched"
+              [class.bg-red-50]="description?.invalid && description?.touched"></textarea>
+            <ion-icon name="document-text-outline" class="absolute left-4 top-5 text-gray-400 text-xl"></ion-icon>
+          </div>
+          <div *ngIf="description?.invalid && description?.touched" class="flex items-center space-x-2 text-red-500 text-sm mt-3 bg-red-50 p-3 rounded-xl">
+            <ion-icon name="alert-circle-outline" class="text-lg"></ion-icon>
+            <div>
+              <span *ngIf="description?.errors?.['required']">Deskripsi wajib diisi</span>
+              <span *ngIf="description?.errors?.['minlength']">Deskripsi minimal 3 karakter</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Account & Date -->
+      <div class="px-4 mb-6">
+        <div class="grid grid-cols-1 gap-2">
+          <!-- Account -->
+          <div class="bg-white rounded-3xl shadow-lg p-5 border border-gray-100">
+            <label class="text-gray-700 font-bold text-base mb-3 block flex items-center space-x-2">
+              <ion-icon name="card-outline" class="text-emerald-600 text-sm"></ion-icon>
+              <span>Metode Pembayaran</span>
+            </label>
+            <select
+              formControlName="account"
+              class="w-full p-4 bg-gray-50 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 font-medium text-gray-700">
+              <option *ngFor="let acc of accountTypes" [value]="acc.value">
+                {{acc.label}}
+              </option>
+            </select>
+          </div>
+
+          <!-- Date -->
+          <div class="bg-white rounded-3xl shadow-lg p-5 border border-gray-100">
+            <label class="text-gray-700 font-bold text-base mb-3 block flex items-center space-x-2">
+              <ion-icon name="calendar-outline" class="text-emerald-600 text-sm"></ion-icon>
+              <span>Tanggal</span>
+            </label>
+            <input
+              formControlName="date"
+              type="date"
+              [max]="getMaxDate()"
+              class="w-full p-4 bg-gray-50 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 font-medium text-gray-700"
+              [class.border-red-400]="date?.invalid && date?.touched">
+          </div>
+        </div>
+      </div>
+
+      <!-- Expandable Optional Fields -->
+      <div class="px-4 mb-6">
+        <div class="bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden">
+          <!-- Header -->
+          <button 
+            type="button"
+            (click)="toggleOptionalFields()"
+            class="w-full p-6 flex items-center justify-between hover:bg-gray-50 transition-colors duration-200">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 bg-blue-100 rounded-2xl flex items-center justify-center">
+                <ion-icon name="options-outline" class="text-blue-600 text-lg"></ion-icon>
+              </div>
+              <div class="text-left">
+                <h4 class="text-gray-900 font-bold text-base">Field Opsional</h4>
+                <p class="text-gray-500 text-sm">Tambahkan detail lainnya</p>
+              </div>
+            </div>
+            <ion-icon 
+              [name]="showOptionalFields ? 'chevron-up-outline' : 'chevron-down-outline'" 
+              class="text-gray-400 text-xl transition-transform duration-200"
+              [class.rotate-180]="showOptionalFields">
+            </ion-icon>
+          </button>
+          
+          <!-- Expandable Content -->
+          <div 
+            class="transition-all duration-300 ease-in-out overflow-hidden"
+            [class.max-h-0]="!showOptionalFields"
+            [class.max-h-screen]="showOptionalFields">
+            <div class="p-6 pt-0 space-y-5 border-t border-gray-100">
+              
+              <!-- Location -->
+              <div>
+                <label class="text-gray-600 text-sm font-medium mb-2 block">Lokasi</label>
+                <div class="relative">
+                  <input
+                    formControlName="location"
+                    type="text"
+                    placeholder="Contoh: Mall, Warung, Online"
+                    class="w-full pl-12 pr-4 text-text-subtle py-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 placeholder-gray-400">
+                  <ion-icon name="location-outline" class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></ion-icon>
+                </div>
+              </div>
+
+              <!-- Notes -->
+              <div>
+                <label class="text-gray-600 text-sm font-medium mb-2 block">Catatan</label>
+                <textarea
+                  formControlName="notes"
+                  rows="3"
+                  placeholder="Catatan tambahan..."
+                  class="w-full p-4 bg-gray-50 border-2 text-text-subtle border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 resize-none placeholder-gray-400">
+                </textarea>
+              </div>
+
+              <!-- Tags -->
+              <div>
+                <label class="text-gray-600  text-sm font-medium mb-2 block">Tags</label>
+                <div class="relative">
+                  <input
+                    formControlName="tags"
+                    type="text"
+                    placeholder="Pisahkan dengan koma: urgent, bulanan, kerja"
+                    class="w-full pl-12 pr-4 py-3 text-text-subtle bg-gray-50 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 placeholder-gray-400">
+                  <ion-icon name="pricetag-outline" class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></ion-icon>
+                </div>
+              </div>
+
+              <!-- Recurring -->
+              <div class="flex items-center space-x-3 p-4 bg-blue-50 rounded-xl">
+                <input
+                  formControlName="isRecurring"
+                  type="checkbox"
+                  id="recurring"
+                  class="w-6 h-6 text-emerald-600 bg-white border-2 border-gray-300 rounded-lg focus:ring-emerald-500 focus:ring-2">
+                <div class="flex-1">
+                  <label for="recurring" class="text-gray-700 font-medium text-sm block">
+                    Transaksi berulang
+                  </label>
+                  <p class="text-gray-500 text-xs">Akan diulang setiap bulan</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="px-4 pb-8 pt-4">
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          [disabled]="isSaving || transactionForm.invalid"
+          class="w-full bg-gradient-to-r from-emerald-600 to-emerald-500 text-white py-5 px-6 rounded-3xl font-bold text-lg hover:from-emerald-700 hover:to-emerald-600 focus:outline-none focus:ring-4 focus:ring-emerald-500/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-3 shadow-lg active:scale-98">
+          
+          <div *ngIf="isSaving" class="flex items-center space-x-2">
+            <ion-spinner name="crescent" class="w-6 h-6"></ion-spinner>
+            <span>Menyimpan...</span>
+          </div>
+          
+          <div *ngIf="!isSaving" class="flex items-center space-x-2">
+            <ion-icon name="checkmark-circle-outline" class="text-2xl"></ion-icon>
+            <span>Simpan Transaksi</span>
+          </div>
+        </button>
+        
+        <!-- Cancel Button -->
+        <button
+          type="button"
+          (click)="goBack()"
+          class="w-full mt-4 bg-gray-100 text-gray-700 py-4 px-6 rounded-3xl font-semibold hover:bg-gray-200 focus:outline-none focus:ring-4 focus:ring-gray-500/20 transition-all duration-200 active:scale-98">
+          <div class="flex items-center justify-center space-x-2">
+            <ion-icon name="close-outline" class="text-xl"></ion-icon>
+            <span>Batal</span>
+          </div>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Toast Notification -->
+  <ion-toast
+    [isOpen]="showToast"
+    [message]="toastMessage"
+    [duration]="3000"
+    [color]="toastColor"
+    position="top"
+    (didDismiss)="showToast = false">
+  </ion-toast>
+</ion-content>
+
+<!-- Custom Styles -->
+<style>
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #d1d5db #f3f4f6;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #f3f4f6;
+    border-radius: 10px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 10px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+  }
+  
+  .active\:scale-95:active {
+    transform: scale(0.95);
+  }
+  
+  .active\:scale-98:active {
+    transform: scale(0.98);
+  }
+  
+  .rotate-180 {
+    transform: rotate(180deg);
+  }
+  
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.5);
+    cursor: pointer;
+  }
+  
+  /* Enhanced focus styles */
+  input:focus, select:focus, textarea:focus {
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  }
+  
+  /* Enhanced button hover effects */
+  button:hover {
+    transform: translateY(-1px);
+  }
+  
+  button:active {
+    transform: translateY(0);
+  }
+  
+  /* Smooth transitions for all interactive elements */
+  * {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+</style>
