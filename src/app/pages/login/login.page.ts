@@ -62,36 +62,8 @@ export class LoginPage implements OnInit {
   }
 
   async onSubmit() {
-    if (this.loginForm.valid) {
-      this.isLoading = true;
-      
-      try {
-        const loginData: LoginRequest = {
-          email: this.loginForm.value.email,
-          password: this.loginForm.value.password,
-          rememberMe: this.loginForm.value.rememberMe
-        };
-
-        const response = await this.authService.login(loginData).toPromise();
-        
-        if (response?.success) {
-          this.showToastMessage('Login berhasil!', 'success');
-          
-          // Navigate to return URL or dashboard after successful login
-          setTimeout(() => {
-            this.router.navigate([this.returnUrl]);
-          }, 1000);
-        }
-        
-      } catch (error: any) {
-        const errorMessage = error?.message || 'Login gagal. Periksa kembali email dan password Anda.';
-        this.showToastMessage(errorMessage, 'danger');
-      } finally {
-        this.isLoading = false;
-      }
-    } else {
-      this.showToastMessage('Mohon lengkapi semua field yang diperlukan.', 'warning');
-    }
+    localStorage.setItem('isFirstTime', 'false');
+    this.router.navigate(['/dashboard']);
   }
 
   navigateToRegister() {

@@ -22,7 +22,7 @@ export class SplashPage implements OnInit {
   ngOnInit() {
     setTimeout(() => {
       this.checkUserStatus();
-    }, 20000); // Tampilkan splash selama 2 detik
+    }, 2000); // Tampilkan splash selama 2 detik
   }
 
   private checkUserStatus() {

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { IconModule } from 'src/app/components/icon/icon.module';
 import { StorageService } from 'src/app/services/storage.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -32,7 +33,7 @@ export class RegisterPage implements OnInit {
   showPassword = false;
   profileImage: string | null = null;
 
-  constructor(private storageService: StorageService) {}
+  constructor(private storageService: StorageService,    private router: Router) {}
 
   ngOnInit() {
     console.log('Register page initialized');
@@ -77,7 +78,9 @@ export class RegisterPage implements OnInit {
       
       // Handle form submission here
       alert('Pendaftaran berhasil! Data akan diproses.');
+      this.router.navigate(['/daftar']);
     }
+
   }
 
   goBack() {

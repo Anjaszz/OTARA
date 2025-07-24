@@ -4,7 +4,7 @@ export const routes: Routes = [
 
   {
     path: '',
-    redirectTo: 'masuk',
+    redirectTo: 'splash',
     pathMatch: 'full',
   },
   {
@@ -19,14 +19,14 @@ export const routes: Routes = [
     path: 'dashboard',
     loadComponent: () => import('./pages/dashboard/dashboard.page').then( m => m.DashboardPage)
   },
-  {
-    path: 'add-transaction',
-    loadComponent: () => import('./pages/add-transaction/add-transaction.page').then( m => m.AddTransactionPage)
-  },
-  {
-    path: 'profile',
-    loadComponent: () => import('./pages/profile/profile.page').then( m => m.ProfilePage)
-  },
+  // {
+  //   path: 'add-transaction',
+  //   loadComponent: () => import('./pages/add-transaction/add-transaction.page').then( m => m.AddTransactionPage)
+  // },
+  // {
+  //   path: 'profile',
+  //   loadComponent: () => import('./pages/profile/profile.page').then( m => m.ProfilePage)
+  // },
   {
     path: 'on-boarding',
     loadComponent: () => import('./pages/on-boarding/on-boarding.page').then( m => m.OnBoardingPage)
