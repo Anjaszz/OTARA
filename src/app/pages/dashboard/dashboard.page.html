@@ -130,7 +130,7 @@
         </div>
       </div>
       <div class="mt-4 pt-4 border-t border-blue-400">
-        <button class="bg-white text-blue-600 px-4 py-2 rounded-lg font-semibold text-sm w-full"
+        <button (click)="openModal()" class="bg-white text-blue-600 px-4 py-2 rounded-lg font-semibold text-sm w-full"
                 [disabled]="stats.currentBalance < 50000">
           {{ stats.currentBalance < 50000 ? 'Saldo Minimum Rp 50.000' : 'Tarik Saldo' }}
         </button>
@@ -410,6 +410,12 @@
     </div>
 
   </div>
+  <app-confirm-proses-modal
+  [isOpen]="isModalOpen"
+  (confirm)="onConfirmProcess()"
+  (cancel)="onCancelProcess()"
+  (close)="closeModal()">
+</app-confirm-proses-modal>
 </ion-content>
 
 <!-- Toast for notifications -->

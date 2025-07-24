@@ -27,6 +27,7 @@ import {
   help,
   refresh
 } from 'ionicons/icons';
+import { ConfirmProsesModalComponent } from "src/app/components/modalbox/confirm-proses-modal/confirm-proses-modal.component";
 
 interface Order {
   id: string;
@@ -61,8 +62,9 @@ interface DashboardStats {
     IonContent,
     IonHeader,
     IonIcon,
-    IonToast
-  ],
+    IonToast,
+    ConfirmProsesModalComponent
+],
   templateUrl: './dashboard.page.html',
   styles: [`
     :host {
@@ -418,5 +420,30 @@ export class DashboardPage implements OnInit, OnDestroy {
   // Track by function for ngFor performance
   trackByOrderId(index: number, order: Order): string {
     return order.id;
+  }
+
+  isModalOpen = false;
+  
+  // Method untuk membuka modal
+  openModal() {
+    this.isModalOpen = true;
+  }
+  
+  // Method untuk menutup modal
+  closeModal() {
+    this.isModalOpen = false;
+  }
+  
+  // Method ketika user konfirmasi
+  onConfirmProcess() {
+    console.log('User confirmed the process');
+    // Lakukan proses yang diperlukan
+    this.closeModal();
+  }
+  
+  // Method ketika user cancel
+  onCancelProcess() {
+    console.log('User cancelled the process');
+    this.closeModal();
   }
 }

@@ -3,41 +3,18 @@
 class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
 (click)="onBackdropClick($event)">
 <div 
-  [class]="isDefaultVariant ? 'relative bg-surface-default w-[343px] rounded-2xl p-6 flex flex-col gap-6 border border-line-default' : 'relative bg-surface-default w-[425px] rounded-2xl p-6 flex flex-col gap-6 border border-line-default'"
+  class="relative bg-surface-default w-[450px] rounded-2xl p-6 flex flex-col gap-6 border border-line-default"
   (click)="$event.stopPropagation()">
   <!-- Title -->
-  <h2 class="text-xl font-bold text-text-bolder text-center">Konfirmasi Proses Pesanan</h2>
+  <h2 class="text-xl font-bold text-text-bolder text-center">Konfirmasi Penarikan Saldo</h2>
   
   <div class="flex flex-col gap-3">
-    <!-- Default variant content -->
-    <div *ngIf="isDefaultVariant" class="flex flex-col gap-2 text-text-subtle text-sm">
-      <p class="leading-5">
-        Apakah Anda ingin melanjutkan proses untuk pesanan yang telah dipilih? Mohon perhatikan hal-hal penting berikut ini.
-      </p>
-      
-      <div class="flex items-center gap-2">
-        <div class="w-2 h-2 rounded-full bg-bold-brand-default p-1"></div>
-        <p class="text-text-subtle text-sm">
-          Pastikan pesanan yang Anda pilih sesuai dengan paket yang akan dikirim
-        </p>
-      </div>
-      
-      <div class="flex items-center gap-2">
-        <div class="w-2 h-2 rounded-full bg-bold-brand-default p-1"></div>
-        <p class="text-text-subtle text-sm">
-          Setelah nomor order diproses, Anda akan menerima nomor resi dan akan dikenakan biaya sesuai tagihan.
-        </p>
-      </div>
-    </div>
 
     <!-- Simple variant content -->
-    <div *ngIf="isSimpleVariant" class="flex flex-col gap-2 text-text-subtle text-sm">
-      <p class="leading-5">
-        Apakah Anda ingin melanjutkan proses untuk pesanan yang telah dibuat?
-      </p>
-      <p class="leading-5">
-        Pastikan informasi pesanan sudah benar dan sesuai. setelah di proses, kamu akan mendapatkan nomor resi lokal langsung
-      </p>
+    <div  class="flex flex-col gap-2 bg-surface-sunken border border-line-default rounded-lg text-text-subtle p-3">
+      <div class="font-semibold text-sm">Bank : <span class="text-text-primary font-bold">BCA</span></div>
+      <div class="font-semibold text-sm">Nomer Rekening : <span class="text-text-bolder font-bold">6738383939</span></div>
+      <div class="font-semibold text-sm">Nama Pemilik Rekening : <span class="text-text-bolder font-bold">Anjas Rani</span></div>
     </div>
     
     <!-- Terms and conditions checkbox (common to both variants) -->
@@ -51,21 +28,22 @@ class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-5
   </div>
   
   <!-- Action buttons -->
-  <div [class]="isDefaultVariant ? 'flex flex-col gap-2' : 'flex gap-2'">
-    <app-pakdome-button
-      [theme]="termsAccepted ? 'solid-purple' : 'disable-btn'"
-      class="w-full"
-      [disabled]="!termsAccepted"
-      (click)="onConfirm()">
-      Proses Sekarang
-    </app-pakdome-button>
-    
+  <div class="flex gap-2">
+   
     <app-pakdome-button
       theme="general-outline"
       class="w-full border border-line-default rounded-lg"
       (click)="onCancel()">
       Nanti Saja
     </app-pakdome-button>
+
+    <app-pakdome-button
+    [theme]="termsAccepted ? 'solid-purple' : 'disable-btn'"
+    class="w-full"
+    [disabled]="!termsAccepted"
+    (click)="onConfirm()">
+    Proses Sekarang
+  </app-pakdome-button>
   </div>
 </div>
 </div>
