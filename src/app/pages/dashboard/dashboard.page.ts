@@ -28,6 +28,7 @@ import {
   refresh
 } from 'ionicons/icons';
 import { ConfirmProsesModalComponent } from "src/app/components/modalbox/confirm-proses-modal/confirm-proses-modal.component";
+import { BottomNavbarComponent } from "src/app/components/dashboard/nav-bottom/navbar-bottom.component";
 
 interface Order {
   id: string;
@@ -63,7 +64,8 @@ interface DashboardStats {
     IonHeader,
     IonIcon,
     IonToast,
-    ConfirmProsesModalComponent
+    ConfirmProsesModalComponent,
+    BottomNavbarComponent
 ],
   templateUrl: './dashboard.page.html',
   styles: [`

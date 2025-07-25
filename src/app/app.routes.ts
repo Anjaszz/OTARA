@@ -35,6 +35,18 @@ export const routes: Routes = [
     path: 'splash',
     loadComponent: () => import('./pages/splash/splash.page').then( m => m.SplashPage)
   },
+  {
+    path: 'history-order',
+    loadComponent: () => import('./pages/history-order/history-order.page').then( m => m.HistoryOrderPage)
+  },
+  {
+    path: 'wallet-balance',
+    loadComponent: () => import('./pages/wallet-balance/wallet-balance.page').then( m => m.WalletBalancePage)
+  },
+  {
+    path: 'menu',
+    loadComponent: () => import('./pages/app-settings/app-settings.page').then( m => m.AppSettingsPage)
+  },
 
 
 ];

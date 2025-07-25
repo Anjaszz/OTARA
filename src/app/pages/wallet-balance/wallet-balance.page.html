@@ -1,0 +1,525 @@
+<!-- Header -->
+<ion-header class="bg-white shadow-sm">
+  <div class="flex items-center justify-between px-4 py-3">
+    <div class="flex items-center gap-3">
+      <ion-icon name="arrow-back" class="text-2xl text-gray-700 cursor-pointer" (click)="goBack()"></ion-icon>
+      <div>
+        <h1 class="text-lg font-bold text-gray-800">Saldo & Keuangan</h1>
+        <p class="text-gray-500 text-sm">Kelola penghasilan dan penarikan</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <button (click)="toggleStatsPanel()">
+        <ion-icon name="stats-chart" class="text-xl text-gray-600 cursor-pointer"></ion-icon>
+      </button>
+      <button (click)="refreshData()">
+        <ion-icon name="refresh" class="text-xl text-gray-600 cursor-pointer" 
+                  [class.animate-spin]="isLoading"></ion-icon>
+      </button>
+    </div>
+  </div>
+</ion-header>
+
+<ion-content fullscreen="true" class="bg-gray-50">
+  <div class=" min-h-screen bg-surface-sunken pb-40">
+    <div class="p-4 space-y-4">
+    
+      <!-- Loading State -->
+      <div *ngIf="isLoading && transactions.length === 0" class="bg-white rounded-xl shadow-sm p-8 text-center">
+        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+          <ion-icon name="wallet" class="text-blue-600 text-2xl"></ion-icon>
+        </div>
+        <h3 class="font-bold text-gray-800 mb-2">Memuat Data Keuangan</h3>
+        <p class="text-gray-500 text-sm">Sedang mengambil data saldo dan transaksi...</p>
+      </div>
+  
+      <!-- Main Balance Card -->
+      <div class="balance-card rounded-xl shadow-lg p-4 text-white fade-in">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <p class="text-white/80 text-sm">Total Saldo</p>
+            <div class="flex items-center gap-3">
+              <h2 class="text-3xl font-bold">
+                {{ showBalance ? 'Rp ' + formatCurrency(balanceStats.totalBalance) : 'Rp ••••••••' }}
+              </h2>
+              <button (click)="toggleBalanceVisibility()" class="p-1 hover:bg-white/20 rounded-full transition-colors">
+                <ion-icon [name]="showBalance ? 'eye' : 'eye-off'" class="text-xl"></ion-icon>
+              </button>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+              <ion-icon name="wallet" class="text-3xl"></ion-icon>
+            </div>
+          </div>
+        </div>
+  
+        <div class="grid grid-cols-2 gap-4 mb-6">
+          <div class="bg-white/10 rounded-lg p-3">
+            <p class="text-white/80 text-xs">Tersedia Ditarik</p>
+            <p class="text-lg font-bold">
+              {{ showBalance ? 'Rp ' + formatCurrency(balanceStats.availableForWithdrawal) : 'Rp ••••••••' }}
+            </p>
+          </div>
+          <div class="bg-white/10 rounded-lg p-3">
+            <p class="text-white/80 text-xs">Menunggu Proses</p>
+            <p class="text-lg font-bold">
+              {{ showBalance ? 'Rp ' + formatCurrency(balanceStats.pendingWithdrawal) : 'Rp ••••••••' }}
+            </p>
+          </div>
+        </div>
+  
+        <button (click)="openWithdrawalModal()" 
+                class="w-full bg-white text-purple-600 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+          💸 Tarik Saldo
+        </button>
+      </div>
+  
+      <!-- Quick Stats -->
+      <div class=" fade-in">
+        <div class="earnings-card rounded-xl shadow-sm p-4 text-white">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-white/80 text-sm">Penghasilan Hari Ini</p>
+              <p class="text-2xl font-bold">
+                {{ showBalance ? 'Rp ' + formatCurrency(balanceStats.todayEarnings) : 'Rp ••••••••' }}
+              </p>
+              <p class="text-white/70 text-xs mt-1">
+                Rata-rata: Rp {{ showBalance ? formatCurrency(balanceStats.averageDailyEarnings) : '••••••••' }}
+              </p>
+            </div>
+            <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+              <ion-icon name="trending-down" class="text-2xl"></ion-icon>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Extended Stats Panel -->
+      <div *ngIf="showStatsPanel" class="bg-white rounded-xl shadow-sm p-4 fade-in">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-bold text-gray-800">📊 Statistik Lengkap</h3>
+          <button (click)="toggleStatsPanel()">
+            <ion-icon name="chevron-up" class="text-xl text-gray-600"></ion-icon>
+          </button>
+        </div>
+  
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+          <div class="text-center p-3 bg-green-50 rounded-lg">
+            <p class="text-2xl font-bold text-green-600">
+              {{ showBalance ? 'Rp ' + formatCurrency(balanceStats.weeklyEarnings) : 'Rp ••••••••' }}
+            </p>
+            <p class="text-xs text-green-700">7 Hari Terakhir</p>
+          </div>
+          <div class="text-center p-3 bg-blue-50 rounded-lg">
+            <p class="text-2xl font-bold text-blue-600">
+              {{ showBalance ? 'Rp ' + formatCurrency(balanceStats.monthlyEarnings) : 'Rp ••••••••' }}
+            </p>
+            <p class="text-xs text-blue-700">30 Hari Terakhir</p>
+          </div>
+          <div class="text-center p-3 bg-purple-50 rounded-lg">
+            <p class="text-2xl font-bold text-purple-600">{{ balanceStats.totalTransactions }}</p>
+            <p class="text-xs text-purple-700">Total Transaksi</p>
+          </div>
+          <div class="text-center p-3 bg-yellow-50 rounded-lg">
+            <p class="text-2xl font-bold text-yellow-600">
+              {{ showBalance ? 'Rp ' + formatCurrency(balanceStats.averageDailyEarnings) : 'Rp ••••••••' }}
+            </p>
+            <p class="text-xs text-yellow-700">Rata-rata Harian</p>
+          </div>
+        </div>
+  
+        <div class="bg-gradient-to-r from-green-100 to-blue-100 rounded-lg p-4">
+          <p class="text-sm text-gray-700 mb-2">
+            💰 <strong>Target Bulanan:</strong> Rp 4.000.000
+          </p>
+          <div class="w-full bg-white rounded-full h-2">
+            <div class="bg-green-500 h-2 rounded-full" 
+                 [style.width.%]="(balanceStats.monthlyEarnings / 4000000) * 100"></div>
+          </div>
+          <p class="text-xs text-gray-600 mt-1">
+            {{ ((balanceStats.monthlyEarnings / 4000000) * 100).toFixed(1) }}% tercapai
+          </p>
+        </div>
+      </div>
+  
+      <!-- Quick Actions -->
+      <div class="grid grid-cols-4 gap-3 fade-in">
+        <button (click)="openWithdrawalModal()" 
+                class="bg-white rounded-xl shadow-sm p-4 text-center hover:bg-gray-50 transition-colors">
+          <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+            <ion-icon name="send" class="text-blue-600 text-xl"></ion-icon>
+          </div>
+          <p class="text-xs font-semibold text-gray-700">Tarik</p>
+        </button>
+  
+        <button (click)="exportStatement()" 
+                class="bg-white rounded-xl shadow-sm p-4 text-center hover:bg-gray-50 transition-colors">
+          <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+            <ion-icon name="download" class="text-green-600 text-xl"></ion-icon>
+          </div>
+          <p class="text-xs font-semibold text-gray-700">Laporan</p>
+        </button>
+  
+        <button class="bg-white rounded-xl shadow-sm p-4 text-center hover:bg-gray-50 transition-colors">
+          <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+            <ion-icon name="qr-code" class="text-purple-600 text-xl"></ion-icon>
+          </div>
+          <p class="text-xs font-semibold text-gray-700">QR Pay</p>
+        </button>
+  
+        <button (click)="contactSupport()" 
+                class="bg-white rounded-xl shadow-sm p-4 text-center hover:bg-gray-50 transition-colors">
+          <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+            <ion-icon name="shield" class="text-orange-600 text-xl"></ion-icon>
+          </div>
+          <p class="text-xs font-semibold text-gray-700">Bantuan</p>
+        </button>
+      </div>
+  
+      <!-- Transaction Filters -->
+      <div class="bg-white rounded-xl shadow-sm p-4 fade-in">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="font-bold text-gray-800">Riwayat Transaksi</h3>
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-gray-500">{{ filteredTransactions.length }} transaksi</span>
+          </div>
+        </div>
+  
+        <!-- Search Bar -->
+        <div class="relative mb-4">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <ion-icon name="search" class="text-gray-400"></ion-icon>
+          </div>
+          <input
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="applyFilters()"
+            type="text"
+            placeholder="Cari transaksi, customer, order ID..."
+            class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+        </div>
+  
+        <!-- Filter Buttons -->
+        <div class="flex flex-wrap gap-2 mb-4">
+          <button 
+            *ngFor="let filter of filterOptions"
+            (click)="setFilter(filter.value)"
+            class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            [class]="currentFilter === filter.value ? 
+              'bg-blue-600 text-white' : 
+              'bg-gray-100 text-gray-600 hover:bg-gray-200'">
+            <ion-icon [name]="filter.icon" class="text-sm"></ion-icon>
+            {{ filter.label }}
+          </button>
+        </div>
+  
+        <!-- Date Filter -->
+        <div class="flex flex-wrap gap-2">
+          <button 
+            *ngFor="let dateOpt of dateFilterOptions"
+            (click)="setDateFilter(dateOpt.value)"
+            class="px-3 py-2 text-xs border border-gray-200  rounded-lg transition-colors"
+            [class]="dateFilter === dateOpt.value ? 'bg-blue-100 text-blue-700 border-blue-300' : 'hover:bg-gray-50 bg-icon-subtlest text-text-bolder'">
+            {{ dateOpt.label }}
+          </button>
+        </div>
+      </div>
+  
+      <!-- Transaction List -->
+      <div class="space-y-3 fade-in">
+        <div *ngFor="let transaction of filteredTransactions; trackBy: trackByTransactionId" 
+             class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+          
+          <div class="p-4">
+            <div class="flex items-center gap-4">
+              <!-- Transaction Icon -->
+              <div class="w-12 h-12 rounded-full flex items-center justify-center"
+                   [class]="getTransactionBgColor(transaction)">
+                <ion-icon [name]="getTransactionIcon(transaction)" 
+                          class="text-xl"
+                          [class]="getTransactionColor(transaction)"></ion-icon>
+              </div>
+  
+              <!-- Transaction Details -->
+              <div class="flex-1">
+                <div class="flex items-center justify-between mb-1">
+                 <div class="flex gap-1">
+                
+                  <h4 class="font-bold text-gray-800 text-sm">#{{ transaction.relatedOrderId }}</h4>
+                  <span class="text-[10px] px-2 py-1  rounded-full"
+                  [class]="getStatusBadgeClass(transaction.status)">
+                     {{ getStatusLabel(transaction.status) }}
+                 </span>
+                 </div>
+                  <div class="text-right">
+                    <p class="font-bold text-lg" [class]="getTransactionColor(transaction)">
+                      {{ transaction.amount > 0 ? '+' : '' }}Rp {{ formatCurrency(transaction.amount) }}
+                    </p>
+                   
+                  </div>
+                </div>
+  
+                <div class="flex flex-col gap-4 text-sm text-gray-500">
+
+                   <div class="flex justify-between">
+                    <span *ngIf="transaction.customerName" class="flex items-center gap-1">
+                      <ion-icon name="person" class="text-xs"></ion-icon>
+                      {{ transaction.customerName }}
+                    </span>
+                    <span>{{ formatDate(transaction.date) }} • {{ transaction.time }}</span>
+                   </div>
+                   
+                   <div class="flex justify-between">
+                    <span *ngIf="transaction.relatedOrderId" class="flex items-center gap-1">
+                      <ion-icon name="receipt" class="text-xs"></ion-icon>
+                         {{ transaction.description }} 
+                    </span>
+                    <button (click)="viewTransactionDetail(transaction)" 
+                          class="text-blue-600 hover:text-blue-800 bg-tint-blue-subtle px-2 py-1.5 rounded-full transition-colors">
+                    <ion-icon name="chevron-down"></ion-icon>
+                  </button>
+                   </div>
+  
+                  
+                </div>
+  
+                <!-- Fee Information -->
+                <div *ngIf="transaction.feeAmount && transaction.feeAmount > 0" 
+                     class="mt-2 text-xs text-red-600 bg-red-50 px-2 py-1 rounded">
+                  Biaya admin: Rp {{ formatCurrency(transaction.feeAmount) }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Empty State -->
+      <div *ngIf="filteredTransactions.length === 0 && !isLoading" 
+           class="bg-white rounded-xl shadow-sm p-8 text-center">
+        <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <ion-icon name="receipt" class="text-gray-400 text-3xl"></ion-icon>
+        </div>
+        <h3 class="font-bold text-gray-800 mb-2">Tidak Ada Transaksi</h3>
+        <p class="text-gray-500 text-sm">
+          {{ searchTerm ? 'Tidak ditemukan transaksi dengan kata kunci tersebut' : 'Belum ada transaksi pada periode ini' }}
+        </p>
+      </div>
+  
+    </div>
+  
+    <!-- Withdrawal Modal -->
+    <div *ngIf="showWithdrawalModal" 
+         class="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50"
+         (click)="closeWithdrawalModal()">
+      <div class="bg-white rounded-t-3xl w-full max-w-md p-6 slide-up" 
+           (click)="$event.stopPropagation()">
+        
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-xl font-bold text-gray-800">💸 Tarik Saldo</h3>
+          <button (click)="closeWithdrawalModal()">
+            <ion-icon name="close-circle" class="text-2xl text-gray-400"></ion-icon>
+          </button>
+        </div>
+  
+        <!-- Available Balance -->
+        <div class="bg-blue-50 rounded-lg p-4 mb-6">
+          <p class="text-blue-700 text-sm">Saldo Tersedia</p>
+          <p class="text-2xl font-bold text-blue-800">
+            Rp {{ formatCurrency(balanceStats.availableForWithdrawal) }}
+          </p>
+        </div>
+  
+        <!-- Withdrawal Methods -->
+        <div class="mb-6">
+          <h4 class="font-semibold text-gray-800 mb-3">Pilih Metode Penarikan</h4>
+          <div class="space-y-3">
+            <div *ngFor="let method of withdrawalMethods" 
+                 class="border rounded-lg p-3 cursor-pointer transition-colors"
+                 [class]="selectedWithdrawalMethod?.id === method.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'"
+                 (click)="selectWithdrawalMethod(method)">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <ion-icon [name]="method.icon" class="text-gray-600"></ion-icon>
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center gap-2">
+                    <p class="font-medium text-gray-800">{{ method.name }}</p>
+                    <span *ngIf="!method.isActive" 
+                          class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+                      Tidak Aktif
+                    </span>
+                  </div>
+                  <p class="text-sm text-gray-600">{{ method.accountNumber }}</p>
+                  <div class="flex items-center gap-4 text-xs text-gray-500 mt-1">
+                    <span>Min: Rp {{ formatCurrency(method.minimumAmount) }}</span>
+                    <span>{{ method.processingTime }}</span>
+                    <span *ngIf="method.feeFixed > 0">
+                      Biaya: Rp {{ formatCurrency(method.feeFixed) }}
+                    </span>
+                    <span *ngIf="method.feeRate > 0">
+                      Biaya: {{ method.feeRate }}%
+                    </span>
+                  </div>
+                </div>
+                <div *ngIf="selectedWithdrawalMethod?.id === method.id" 
+                     class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                  <ion-icon name="checkmark" class="text-white text-sm"></ion-icon>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Amount Input -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Jumlah Penarikan</label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">Rp</span>
+            <input
+              [(ngModel)]="withdrawalAmount"
+              type="number"
+              placeholder="0"
+              class="w-full pl-10 pr-4 py-3 border text-text-subtle border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          </div>
+          <div *ngIf="selectedWithdrawalMethod" class="mt-2 text-sm text-gray-600">
+            <p>Biaya admin: Rp {{ formatCurrency(calculateWithdrawalFee()) }}</p>
+            <p class="font-medium">Jumlah diterima: Rp {{ formatCurrency(getWithdrawalNetAmount()) }}</p>
+          </div>
+        </div>
+  
+        <!-- Notes -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Catatan (Opsional)</label>
+          <textarea
+            [(ngModel)]="withdrawalNote"
+            placeholder="Tambahkan catatan..."
+            rows="3"
+            class="w-full px-3 py-2 text-text-subtle border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"></textarea>
+        </div>
+  
+        <!-- Submit Button -->
+        <button (click)="processWithdrawal()" 
+                [disabled]="!canProceedWithdrawal()"
+                class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors">
+          <span *ngIf="canProceedWithdrawal()">
+            Tarik Rp {{ formatCurrency(withdrawalAmount) }}
+          </span>
+          <span *ngIf="!canProceedWithdrawal()" class="text-gray-500">
+            Pilih metode dan masukkan jumlah
+          </span>
+        </button>
+  
+        <div class="mt-4 text-center">
+          <p class="text-xs text-gray-500">
+            🔒 Transaksi aman dan terenkripsi
+          </p>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Transaction Detail Modal -->
+    <div *ngIf="showTransactionDetail && selectedTransaction" 
+         class="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50"
+         (click)="closeTransactionDetail()">
+      <div class="bg-white rounded-t-3xl w-full max-w-md p-6 slide-up" 
+           (click)="$event.stopPropagation()">
+        
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-xl font-bold text-gray-800">Detail Transaksi</h3>
+          <button (click)="closeTransactionDetail()">
+            <ion-icon name="close-circle" class="text-2xl text-gray-400"></ion-icon>
+          </button>
+        </div>
+  
+        <!-- Transaction Header -->
+        <div class="flex items-center gap-4 mb-6">
+          <div class="w-16 h-16 rounded-full flex items-center justify-center"
+               [class]="getTransactionBgColor(selectedTransaction)">
+            <ion-icon [name]="getTransactionIcon(selectedTransaction)" 
+                      class="text-2xl"
+                      [class]="getTransactionColor(selectedTransaction)"></ion-icon>
+          </div>
+          <div>
+            <h4 class="font-bold text-lg text-gray-800">{{ selectedTransaction.description }}</h4>
+            <p class="text-2xl font-bold" [class]="getTransactionColor(selectedTransaction)">
+              {{ selectedTransaction.amount > 0 ? '+' : '' }}Rp {{ formatCurrency(selectedTransaction.amount) }}
+            </p>
+          </div>
+        </div>
+  
+        <!-- Transaction Details -->
+        <div class="space-y-4">
+          <div class="flex justify-between py-2 border-b border-gray-100">
+            <span class="text-gray-600">Status</span>
+            <span class="px-3 py-1 rounded-full text-sm"
+                  [class]="getStatusBadgeClass(selectedTransaction.status)">
+              {{ getStatusLabel(selectedTransaction.status) }}
+            </span>
+          </div>
+  
+          <div class="flex justify-between py-2 border-b border-gray-100">
+            <span class="text-gray-600">Tanggal & Waktu</span>
+            <span class="text-gray-800">{{ formatDate(selectedTransaction.date) }} • {{ selectedTransaction.time }}</span>
+          </div>
+  
+          <div *ngIf="selectedTransaction.customerName" class="flex justify-between py-2 border-b border-gray-100">
+            <span class="text-gray-600">Customer</span>
+            <span class="text-gray-800">{{ selectedTransaction.customerName }}</span>
+          </div>
+  
+          <div *ngIf="selectedTransaction.relatedOrderId" class="flex justify-between py-2 border-b border-gray-100">
+            <span class="text-gray-600">Order ID</span>
+            <span class="text-gray-800">{{ selectedTransaction.relatedOrderId }}</span>
+          </div>
+  
+          <div *ngIf="selectedTransaction.withdrawalBankName" class="flex justify-between py-2 border-b border-gray-100">
+            <span class="text-gray-600">Metode</span>
+            <span class="text-gray-800">{{ selectedTransaction.withdrawalBankName }}</span>
+          </div>
+  
+          <div *ngIf="selectedTransaction.withdrawalAccountNumber" class="flex justify-between py-2 border-b border-gray-100">
+            <span class="text-gray-600">Rekening</span>
+            <span class="text-gray-800">{{ selectedTransaction.withdrawalAccountNumber }}</span>
+          </div>
+  
+          <div *ngIf="selectedTransaction.feeAmount && selectedTransaction.feeAmount > 0" 
+               class="flex justify-between py-2 border-b border-gray-100">
+            <span class="text-gray-600">Biaya Admin</span>
+            <span class="text-red-600">Rp {{ formatCurrency(selectedTransaction.feeAmount) }}</span>
+          </div>
+  
+          <div *ngIf="selectedTransaction.notes" class="py-2">
+            <span class="text-gray-600 block mb-2">Catatan</span>
+            <p class="text-gray-800 bg-gray-50 p-3 rounded-lg text-sm">{{ selectedTransaction.notes }}</p>
+          </div>
+        </div>
+  
+        <!-- Action Buttons -->
+        <div class="mt-6 grid grid-cols-2 gap-3">
+          <button class="bg-blue-100 text-blue-600 py-3 rounded-lg font-medium hover:bg-blue-200 transition-colors">
+            <ion-icon name="download" class="mr-2"></ion-icon>
+            Download
+          </button>
+          <button class="bg-gray-100 text-gray-600 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors">
+            <ion-icon name="share" class="mr-2"></ion-icon>
+            Share
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-bottom-navbar>
+  
+  </app-bottom-navbar>
+</ion-content>
+
+<!-- Toast -->
+<ion-toast 
+  [isOpen]="showToast"
+  [message]="toastMessage"
+  [duration]="3000"
+  [position]="'bottom'"
+  (didDismiss)="showToast = false">
+</ion-toast> 

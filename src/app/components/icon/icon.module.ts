@@ -210,7 +210,7 @@ import { BoxRemoveIcon } from "./box-remove";
 	BriIconComponent,
 	BcaIconComponent,
 	QuestionCircleIcon,
-	BoxRemoveIcon
+	BoxRemoveIcon,
 	],
 	exports: [
 	ArrowRightComponent,

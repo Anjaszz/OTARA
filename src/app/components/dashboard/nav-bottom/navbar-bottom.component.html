@@ -13,45 +13,37 @@
                     color="currentcolor"/>
           </div>
           <span class="text-xs" [ngClass]="{'text-text-primary': isActive('/dashboard'), 'text-text-subtler': !isActive('/dashboard')}">
-            Beranda
+            Home
           </span>
         </a>
 
         <!-- Pesanan -->
-        <a routerLink="/daftar-pesanan" 
+        <a routerLink="/history-order" 
            routerLinkActive="active-link"
            [routerLinkActiveOptions]="{exact: true}"
            class="flex flex-col items-center gap-[2px] min-w-[4rem]">
           <div class="rounded-full flex items-center justify-center w-full p-1"
-               [ngClass]="{'bg-tint-brand-default': isActive('/daftar-pesanan')}">
-            <ic-box [ngClass]="{'text-text-primary': isActive('/daftar-pesanan'), 'text-icon-subtler': !isActive('/daftar-pesanan')}"
+               [ngClass]="{'bg-tint-brand-default': isActive('/history-order')}">
+            <ic-box [ngClass]="{'text-text-primary': isActive('/history-order'), 'text-icon-subtler': !isActive('/history-order')}"
                    color="currentcolor"/>
           </div>
-          <span class="text-xs" [ngClass]="{'text-text-primary': isActive('/daftar-pesanan'), 'text-text-subtler': !isActive('/daftar-pesanan')}">
-            Pesanan
+          <span class="text-xs" [ngClass]="{'text-text-primary': isActive('/history-order'), 'text-text-subtler': !isActive('/history-order')}">
+            History 
           </span>
         </a>
 
-        <!-- Add Button -->
-        <a (click)="handleBuatKiriman()"  
-           class="flex flex-col items-center">
-          <div class="p-2 rounded-full bg-gradient-to-r from-bold-brand-default to-bold-brand-subtle flex items-center justify-center shadow-lg">
-            <ic-plus />
-          </div>
-        </a>
-
         <!-- Tagihan -->
-        <a routerLink="/tagihan" 
+        <a routerLink="/wallet-balance" 
            routerLinkActive="active-link"
            [routerLinkActiveOptions]="{exact: true}"
            class="flex flex-col items-center gap-[2px] min-w-[4rem]">
           <div class="rounded-full flex items-center justify-center w-full p-1"
-               [ngClass]="{'bg-tint-brand-default': isActive('/tagihan')}">
-            <ic-cash [ngClass]="{'text-text-primary': isActive('/tagihan'), 'text-icon-subtler': !isActive('/tagihan')}"
+               [ngClass]="{'bg-tint-brand-default': isActive('/wallet-balance')}">
+            <ic-cash [ngClass]="{'text-text-primary': isActive('/wallet-balance'), 'text-icon-subtler': !isActive('/wallet-balance')}"
                     color="currentcolor"/>
           </div>
-          <span class="text-xs" [ngClass]="{'text-text-primary': isActive('/tagihan'), 'text-text-subtler': !isActive('/tagihan')}">
-            Tagihan
+          <span class="text-xs" [ngClass]="{'text-text-primary': isActive('/wallet-balance'), 'text-text-subtler': !isActive('/wallet-balance')}">
+            Saldo
           </span>
         </a>
 
