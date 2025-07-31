@@ -12,7 +12,7 @@
 </ion-header>
 
 <ion-content class="bg-gray-50">
-  <div class="bg-surface-sunken pb-10 min-h-screen overflow-y-auto">
+  <div class="bg-surface-sunken pb-52 min-h-screen overflow-y-auto">
     <div class="p-4 space-y-6">
 
       <!-- Profile Header -->
@@ -30,13 +30,13 @@
           <div class="flex-1">
             <h2 class="text-xl font-bold">{{ userProfile.name }}</h2>
             <p class="text-white/80 text-sm">{{ userProfile.email }}</p>
-            <div class="flex items-center gap-4 mt-2">
+            <div class="flex flex-col  gap-2 mt-2">
               <div class="flex items-center gap-1">
                 <ion-icon name="star" class="text-yellow-300"></ion-icon>
                 <span class="text-sm">{{ userProfile.rating }}/5</span>
               </div>
               <div class="text-sm">{{ userProfile.totalOrders }} order selesai</div>
-              <div class="text-sm">Bergabung {{ formatJoinDate() }}</div>
+              <div class="text-sm">Bergabung <span class="font-bold">{{ formatJoinDate() }}</span></div>
             </div>
           </div>
         </div>
@@ -1037,7 +1037,9 @@
       </div>
     </div>
   </div>
-
+  <app-bottom-navbar>
+  
+  </app-bottom-navbar>
 </ion-content>
 
 <!-- Toast -->

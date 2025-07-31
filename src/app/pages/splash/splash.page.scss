@@ -23,16 +23,21 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
     padding: 0 24px;
     z-index: 2;
+    text-align: center;
+    min-height: 60vh;
   }
   
   .logo-container {
     margin-bottom: 32px;
+    display: flex;
+    justify-content: center;
     
     .logo-circle {
-      width: 120px;
-      height: 120px;
+      width: 420px;
+      height: 420px;
       border-radius: 50%;
       background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%);
       display: flex;
@@ -42,8 +47,8 @@
       animation: logoFloat 3s ease-in-out infinite;
       
       .logo-image {
-        width: auto;
-        height: auto;
+        width: 320px;
+        height: 320px;
         border-radius: 50%;
         object-fit: cover;
       }
@@ -52,7 +57,9 @@
   
   .tagline-container {
     text-align: center;
-    max-width: 300px;
+    max-width: 320px;
+    width: 100%;
+    padding: 0 16px;
     
     .tagline {
       font-size: 24px;
@@ -89,7 +96,7 @@
   
   .loading-container {
     position: absolute;
-    bottom: 80px;
+    bottom: 100px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 3;
@@ -97,6 +104,7 @@
     .loading-dots {
       display: flex;
       gap: 8px;
+      justify-content: center;
       
       .dot {
         width: 8px;
@@ -137,7 +145,15 @@
     }
   }
   
-
+  
+  @keyframes waveMove {
+    0%, 100% {
+      transform: translateX(0);
+    }
+    50% {
+      transform: translateX(-20px);
+    }
+  }
   
   @keyframes dotPulse {
     0%, 100% {
@@ -152,6 +168,11 @@
   
   // Responsive Design
   @media (max-width: 480px) {
+    .splash-main {
+      padding: 0 16px;
+      min-height: 55vh;
+    }
+    
     .logo-container .logo-circle {
       width: 100px;
       height: 100px;
@@ -163,12 +184,47 @@
     }
     
     .tagline-container {
+      max-width: 280px;
+      
       .tagline {
         font-size: 20px;
+        line-height: 1.2;
       }
       
       .sub-tagline {
         font-size: 14px;
+      }
+    }
+    
+    .loading-container {
+      bottom: 80px;
+    }
+  }
+  
+  @media (max-width: 360px) {
+    .splash-main {
+      padding: 0 12px;
+    }
+    
+    .logo-container .logo-circle {
+      width: 90px;
+      height: 90px;
+      
+      .logo-image {
+        width: 60px;
+        height: 60px;
+      }
+    }
+    
+    .tagline-container {
+      max-width: 260px;
+      
+      .tagline {
+        font-size: 18px;
+      }
+      
+      .sub-tagline {
+        font-size: 13px;
       }
     }
   }
@@ -180,5 +236,48 @@
     
     .wave-container {
       height: 30%;
+    }
+    
+    .loading-container {
+      bottom: 60px;
+    }
+  }
+  
+  @media (max-height: 568px) {
+    .splash-main {
+      min-height: 50vh;
+    }
+    
+    .logo-container {
+      margin-bottom: 16px;
+      
+      .logo-circle {
+        width: 90px;
+        height: 90px;
+        
+        .logo-image {
+          width: 60px;
+          height: 60px;
+        }
+      }
+    }
+    
+    .tagline-container {
+      .tagline {
+        font-size: 18px;
+        margin-bottom: 8px;
+      }
+      
+      .sub-tagline {
+        font-size: 13px;
+      }
+    }
+    
+    .wave-container {
+      height: 25%;
+    }
+    
+    .loading-container {
+      bottom: 40px;
     }
   }

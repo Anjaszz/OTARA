@@ -59,6 +59,8 @@ import {
   school,
   medkit,
   storefront, checkmarkCircle, download } from 'ionicons/icons';
+import { BottomNavbarComponent } from 'src/app/components/dashboard/nav-bottom/navbar-bottom.component';
+import { Router } from '@angular/router';
 
 interface UserProfile {
   id: string;
@@ -147,7 +149,8 @@ type SettingSection = 'profile' | 'notifications' | 'security' | 'preferences' |
     IonContent,
     IonHeader,
     IonIcon,
-    IonToast
+    IonToast,
+    BottomNavbarComponent
   ],
   templateUrl: './app-settings.page.html',
   styles: [`
@@ -364,7 +367,8 @@ export class AppSettingsPage implements OnInit, OnDestroy {
   constructor(
     private toastController: ToastController,
     private alertController: AlertController,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    private router: Router
   ) {
     addIcons({arrowBack,person,checkmark,star,notifications,shield,settings,business,help,checkmarkCircle,key,chevronForward,download,trash,volumeHigh,phonePortrait,mail,chatbubble,refresh,bug,share,heart,logOut,close,document:documentIcon,card,moon,language,informationCircle,camera,call,location,time,car,wallet,eye,eyeOff,lockClosed,fingerPrint,globe,warning,sunny,contrast,volumeOff,desktop,colorPalette,map,school,medkit,storefront});
   }
@@ -678,6 +682,7 @@ export class AppSettingsPage implements OnInit, OnDestroy {
           handler: () => {
             this.showToastMessage('Logout berhasil');
             // In real app: clear session and navigate to login
+            this.router.navigate(['/masuk']);
           }
         }
       ]

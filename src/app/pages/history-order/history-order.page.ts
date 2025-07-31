@@ -37,8 +37,7 @@ import {
   eye,
   heart,
   thumbsUp,
-  alertCircle
-} from 'ionicons/icons';
+  alertCircle, options, card, addCircle } from 'ionicons/icons';
 import { BottomNavbarComponent } from "src/app/components/dashboard/nav-bottom/navbar-bottom.component";
 import { Router } from '@angular/router';
 
@@ -175,34 +174,7 @@ export class HistoryOrderPage implements OnInit, OnDestroy {
     private loadingController: LoadingController,
     private router: Router
   ) {
-    addIcons({
-      arrowBack,
-      search,
-      filter,
-      calendar,
-      star,
-      checkmarkCircle,
-      closeCircle,
-      time,
-      location,
-      car,
-      person,
-      wallet,
-      chatbubble,
-      call,
-      refresh,
-      chevronDown,
-      chevronUp,
-      document,
-      camera,
-      download,
-      share,
-      statsChart,
-      eye,
-      heart,
-      thumbsUp,
-      alertCircle
-    });
+    addIcons({arrowBack,statsChart,refresh,chevronUp,filter,search,closeCircle,calendar,options,wallet,person,car,card,location,star,checkmarkCircle,alertCircle,camera,eye,call,share,download,addCircle,time,chatbubble,chevronDown,document,heart,thumbsUp});
   }
 
   ngOnInit() {
