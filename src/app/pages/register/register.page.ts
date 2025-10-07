@@ -1,39 +1,54 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import {
+  IonContent,
+  IonSpinner,
+  IonToast
+} from '@ionic/angular/standalone';
 import { IconModule } from 'src/app/components/icon/icon.module';
 import { StorageService } from 'src/app/services/storage.service';
-import { Router } from '@angular/router';
+import { AuthService, RegisterSellerRequest } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule,IconModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, IonContent, IonSpinner, IonToast, IconModule,RouterLink],
   templateUrl: 'register.page.html',
   styleUrls: []
 })
 export class RegisterPage implements OnInit {
-  
-  formData = {
-    nama: '',
-    email: '',
-    nomorTelepon: '',
-    jenisKelamin: '',
-    kataSandi: '',
-    nomorKTP: '',
-    alamatLengkap: '',
-    domisili: '',
-    namaPemilikRekening: '',
-    namaBank: '',
-    nomorRekening: '',
-    setujuSyarat: false
-  };
 
+  registerForm: FormGroup;
   showPassword = false;
   profileImage: string | null = null;
+  profileImageFile: File | null = null;
+  isLoading = false;
+  showToast = false;
+  toastMessage = '';
+  toastColor = 'danger';
 
-  constructor(private storageService: StorageService,    private router: Router) {}
+  constructor(
+    private fb: FormBuilder,
+    private storageService: StorageService,
+    private router: Router,
+    private authService: AuthService
+  ) {
+    this.registerForm = this.fb.group({
+      namaToko: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      domisili: ['', Validators.required],
+      jenisProdukUsaha: ['', Validators.required],
+      nomorIzinUsaha: ['', Validators.required],
+      alamatUsahaLengkap: ['', Validators.required],
+      whatsapp: ['', Validators.required],
+      facebook: [''],
+      instagram: [''],
+      setujuSyarat: [false, Validators.requiredTrue]
+    });
+  }
 
   ngOnInit() {
     console.log('Register page initialized');
@@ -42,6 +57,7 @@ export class RegisterPage implements OnInit {
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
+      this.profileImageFile = file;
       const reader = new FileReader();
       reader.onload = (e: any) => {
         this.profileImage = e.target.result;
@@ -50,41 +66,96 @@ export class RegisterPage implements OnInit {
     }
   }
 
-  togglePasswordVisibility() {
+  togglePassword() {
     this.showPassword = !this.showPassword;
   }
 
-  isFormValid(): boolean {
-    return this.formData.nama.trim() !== '' &&
-           this.formData.email.trim() !== '' &&
-           this.formData.nomorTelepon.trim() !== '' &&
-           this.formData.jenisKelamin !== '' &&
-           this.formData.kataSandi.trim() !== '' &&
-           this.formData.nomorKTP.trim() !== '' &&
-           this.formData.alamatLengkap.trim() !== '' &&
-           this.formData.domisili !== '' &&
-           this.formData.namaPemilikRekening.trim() !== '' &&
-           this.formData.namaBank !== '' &&
-           this.formData.nomorRekening.trim() !== '' &&
-           this.formData.setujuSyarat;
-  }
+  async onSubmit() {
+    if (this.registerForm.valid) {
+      // Validasi foto profil wajib diupload
+      if (!this.profileImageFile) {
+        this.showToastMessage('Foto profil wajib diupload', 'danger');
+        return;
+      }
 
-  onSubmit() {
-    if (this.isFormValid()) {
-      console.log('Form submitted:', this.formData);
-      
-      // Set bahwa user sudah daftar (tidak first time lagi)
-      this.storageService.setFirstTimeUser(false);
-      
-      // Handle form submission here
-      alert('Pendaftaran berhasil! Data akan diproses.');
-      this.router.navigate(['/daftar']);
+      this.isLoading = true;
+
+      const sellerData: RegisterSellerRequest = {
+        namaToko: this.registerForm.value.namaToko,
+        email: this.registerForm.value.email,
+        password: this.registerForm.value.password,
+        domisili: this.registerForm.value.domisili,
+        jenisUsaha: this.registerForm.value.jenisProdukUsaha,
+        nomorIzinUsaha: this.registerForm.value.nomorIzinUsaha,
+        alamatUsaha: this.registerForm.value.alamatUsahaLengkap,
+        whatsapp: this.registerForm.value.whatsapp,
+        facebook: this.registerForm.value.facebook || '',
+        instagram: this.registerForm.value.instagram || '',
+        fotoProfil: this.profileImageFile
+      };
+
+      this.authService.registerSeller(sellerData).subscribe({
+        next: (response) => {
+          this.isLoading = false;
+
+          // Set bahwa user sudah daftar (tidak first time lagi)
+          this.storageService.setFirstTimeUser(false);
+
+          this.showToastMessage(response.message, 'success');
+
+          // Navigate to dashboard after 1.5 seconds
+          setTimeout(() => {
+            this.router.navigate(['/dashboard']);
+          }, 1500);
+        },
+        error: (error) => {
+          this.isLoading = false;
+          const errorMessage = error.message || 'Terjadi kesalahan. Silakan coba lagi.';
+          this.showToastMessage(errorMessage, 'danger');
+          console.error('Registration error:', error);
+        }
+      });
+    } else {
+      this.showToastMessage('Mohon lengkapi semua field yang wajib diisi.', 'danger');
     }
-
   }
 
-  goBack() {
-    // Handle back navigation
-    console.log('Back button clicked');
+  private showToastMessage(message: string, color: string) {
+    this.toastMessage = message;
+    this.toastColor = color;
+    this.showToast = true;
+  }
+
+  // Getters for form controls
+  get namaToko() {
+    return this.registerForm.get('namaToko');
+  }
+
+  get email() {
+    return this.registerForm.get('email');
+  }
+
+  get password() {
+    return this.registerForm.get('password');
+  }
+
+  get domisili() {
+    return this.registerForm.get('domisili');
+  }
+
+  get jenisProdukUsaha() {
+    return this.registerForm.get('jenisProdukUsaha');
+  }
+
+  get nomorIzinUsaha() {
+    return this.registerForm.get('nomorIzinUsaha');
+  }
+
+  get alamatUsahaLengkap() {
+    return this.registerForm.get('alamatUsahaLengkap');
+  }
+
+  get whatsapp() {
+    return this.registerForm.get('whatsapp');
   }
 }

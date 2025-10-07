@@ -1,0 +1,135 @@
+<ion-header class="header-custom">
+  <div class="header-content">
+    <button class="icon-btn" (click)="goBack()">
+      <ion-icon name="arrow-back" class="text-white text-xl"></ion-icon>
+    </button>
+    <h1 class="header-title">Profile Penjual</h1>
+    <div class="w-10"></div>
+  </div>
+</ion-header>
+
+<ion-content class="content-custom">
+  <!-- Loading State -->
+  <div *ngIf="isLoadingSeller" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p class="loading-text">Memuat profil penjual...</p>
+  </div>
+
+  <!-- Seller Profile Content -->
+  <div *ngIf="!isLoadingSeller && seller" class="profile-container">
+
+    <!-- Seller Info Card -->
+    <div class="seller-info-card">
+      <!-- Cover/Background -->
+      <div class="cover-section">
+        <div class="cover-gradient"></div>
+      </div>
+
+      <!-- Profile Photo -->
+      <div class="profile-photo-wrapper">
+        <img [src]="seller.fotoProfil || 'assets/placeholder-avatar.jpg'"
+             [alt]="seller.namaToko"
+             class="profile-photo">
+        <div *ngIf="seller.isVerified" class="verified-badge">
+          <svg class="verified-icon" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Seller Details -->
+      <div class="seller-details">
+        <h1 class="seller-name">{{ seller.namaToko }}</h1>
+        <p class="seller-type">{{ seller.jenisUsaha }}</p>
+
+        <!-- Location -->
+        <div class="info-row">
+          <ion-icon name="location-outline" class="info-icon"></ion-icon>
+          <span class="info-text">{{ seller.domisili }}</span>
+        </div>
+
+        <!-- Address -->
+        <div class="info-row">
+          <ion-icon name="storefront-outline" class="info-icon"></ion-icon>
+          <span class="info-text">{{ seller.alamatUsaha }}</span>
+        </div>
+
+        <!-- Contact Info -->
+        <div *ngIf="seller.whatsapp" class="info-row">
+          <ion-icon name="call-outline" class="info-icon"></ion-icon>
+          <span class="info-text">{{ seller.whatsapp }}</span>
+        </div>
+
+        <!-- Social Media Links -->
+        <div class="social-links">
+          <button
+            *ngIf="seller.whatsapp"
+            class="social-btn whatsapp-btn"
+            (click)="contactViaWhatsapp()">
+            <ion-icon name="logo-whatsapp" class="social-icon"></ion-icon>
+            <span>WhatsApp</span>
+          </button>
+
+          <button
+            *ngIf="seller.facebook"
+            class="social-btn facebook-btn"
+            (click)="openFacebook()">
+            <ion-icon name="logo-facebook" class="social-icon"></ion-icon>
+            <span>Facebook</span>
+          </button>
+
+          <button
+            *ngIf="seller.instagram"
+            class="social-btn instagram-btn"
+            (click)="openInstagram()">
+            <ion-icon name="logo-instagram" class="social-icon"></ion-icon>
+            <span>Instagram</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Products Section -->
+    <div class="products-section">
+      <h2 class="section-title">Produk dari {{ seller.namaToko }}</h2>
+
+      <!-- Loading Products -->
+      <div *ngIf="isLoadingProducts" class="loading-products">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p class="loading-text">Memuat produk...</p>
+      </div>
+
+      <!-- Products Grid -->
+      <div *ngIf="!isLoadingProducts && products.length > 0" class="products-grid">
+        <div
+          *ngFor="let product of products"
+          class="product-card"
+          (click)="viewProductDetail(product._id)">
+          <div class="product-image-wrapper">
+            <img [src]="getProductImage(product)" [alt]="product.nama" class="product-image">
+          </div>
+          <div class="product-info">
+            <h3 class="product-name">{{ product.nama }}</h3>
+            <p class="product-price">Rp {{ product.harga | number }}</p>
+            <span class="product-category">{{ product.kategori }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!isLoadingProducts && products.length === 0" class="empty-state">
+        <div class="empty-icon">📦</div>
+        <p class="empty-title">Belum Ada Produk</p>
+        <p class="empty-text">Penjual ini belum menambahkan produk</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!isLoadingSeller && !seller" class="error-state">
+    <div class="error-icon">😞</div>
+    <p class="error-title">Penjual Tidak Ditemukan</p>
+    <p class="error-text">Maaf, profil penjual tidak dapat ditemukan</p>
+    <button class="error-btn" (click)="goBack()">Kembali</button>
+  </div>
+</ion-content>

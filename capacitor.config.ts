@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'io.ionic.starter',
-  appName: 'pakdome',
+  appName: 'UNK Bekasi',
   webDir: 'www',
   android: {
     includePlugins: [
@@ -20,16 +20,17 @@ const config: CapacitorConfig = {
       launchShowDuration: 3000,
       launchAutoHide: true,
       launchFadeOutDuration: 500,
-      backgroundColor: "#00000",
-      androidSplashResourceName: "splash",
+      backgroundColor: "#59AC77",
       androidScaleType: "CENTER_CROP",
       splashFullScreen: true,
       splashImmersive: true,
       layoutName: "launch_screen",
-  },
+      androidSplashResourceName: "splash",
+    },
     StatusBar: {
-      style: 'DARK',
-      overlaysWebView: false 
+      style: 'LIGHT',
+      overlaysWebView: false,
+      backgroundColor: '#59AC77'
     }
   }
 };

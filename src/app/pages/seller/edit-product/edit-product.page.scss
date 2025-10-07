@@ -1,0 +1,20 @@
+ion-content {
+  --background: #f9fafb;
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+ion-item {
+  --background: transparent;
+  --padding-start: 0;
+  --inner-padding-end: 0;
+}
+
+ion-input,
+ion-select,
+ion-textarea {
+  --padding-start: 12px;
+  --padding-end: 12px;
+}

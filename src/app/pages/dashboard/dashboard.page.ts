@@ -1,58 +1,26 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { 
-  IonContent, 
-  IonHeader, 
-  IonIcon, 
+import { Router, RouterLink } from '@angular/router';
+import {
+  IonContent,
+  IonHeader,
+  IonIcon,
   IonToast,
-  ToastController 
+  IonSpinner,
+  ToastController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import {
-  power,
-  wallet,
-  star,
-  time,
-  wifi,
-  call,
-  chatbubble,
-  location,
-  car,
-  person,
-  checkmarkCircle,
-  closeCircle,
-  notifications,
-  menu,
-  settings,
-  help,
-  refresh
-} from 'ionicons/icons';
-import { ConfirmProsesModalComponent } from "src/app/components/modalbox/confirm-proses-modal/confirm-proses-modal.component";
-import { BottomNavbarComponent } from "src/app/components/dashboard/nav-bottom/navbar-bottom.component";
+import { person } from 'ionicons/icons';
+import { ProductService, Category, Product, SellerInfo } from '../../services/product.service';
+import { AuthService } from '../../services/auth.service';
 
-interface Order {
-  id: string;
-  customerName: string;
-  customerRating: number;
-  problem: string;
-  location: string;
-  distance: number;
-  estimatedTime: string;
-  fee: number;
-  vehicleType: string;
-  vehicleInfo: string;
-  customerPhoto: string;
-  createdAt: Date;
-}
-
-interface DashboardStats {
-  todayEarnings: number;
-  completedJobs: number;
-  averageRating: number;
-  onlineHours: number;
-  currentBalance: number;
-  totalJobsToday: number;
-  weeklyEarnings: number;
+interface SliderItem {
+  id: number;
+  title: string;
+  subtitle: string;
+  backgroundImage: string;
+  buttonText: string;
+  route?: string;
 }
 
 @Component({
@@ -60,392 +28,221 @@ interface DashboardStats {
   standalone: true,
   imports: [
     CommonModule,
+    RouterLink,
     IonContent,
     IonHeader,
     IonIcon,
-    IonToast,
-    ConfirmProsesModalComponent,
-    BottomNavbarComponent
-],
+    IonSpinner
+  ],
   templateUrl: './dashboard.page.html',
-  styles: [`
-    :host {
-      display: block;
-      height: 100vh;
-    }
-    
-    .pulse {
-      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    }
-    
-    @keyframes pulse {
-      0%, 100% {
-        opacity: 1;
-      }
-      50% {
-        opacity: .5;
-      }
-    }
-    
-    .fade-in {
-      animation: fadeIn 0.3s ease-in-out;
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  `]
+  styleUrls: ['./dashboard.page.scss']
 })
 export class DashboardPage implements OnInit, OnDestroy {
-  
-  // Status data
-  isOnline = false; // Start with offline
-  stats: DashboardStats = {
-    todayEarnings: 0,
-    completedJobs: 0,
-    averageRating: 0,
-    onlineHours: 0,
-    currentBalance: 1250000, // Previous balance
-    totalJobsToday: 0,
-    weeklyEarnings: 850000
-  };
+  currentSlide = 0;
+  private autoSlideInterval: any;
+  isLoadingCategories = false;
+  isLoadingProducts = false;
 
-  // Toast
-  showToast = false;
-  toastMessage = '';
+  constructor(
+    private productService: ProductService,
+    private authService: AuthService,
+    private router: Router,
+    private toastController: ToastController
+  ) {
+    addIcons({ person });
+  }
 
-  // Active order
-  activeOrder: Order | null = null;
-
-  // Incoming orders
-  incomingOrders: Order[] = [];
-
-  // Timer for online duration
-  private onlineTimer: any;
-  private orderSimulationTimer: any;
-  private onlineStartTime: Date | null = null;
-
-  // Sample orders for simulation
-  private sampleOrders: Omit<Order, 'id' | 'createdAt'>[] = [
+  sliderItems: SliderItem[] = [
     {
-      customerName: 'Budi Santoso',
-      customerRating: 4.3,
-      problem: 'Mesin overheat, keluar asap putih dari knalpot',
-      location: 'Jl. Gatot Subroto No. 88, Jakarta Selatan',
-      distance: 3.2,
-      estimatedTime: '12 menit',
-      fee: 85000,
-      vehicleType: 'Motor',
-      vehicleInfo: 'Yamaha Mio - Biru (B 9876 GHI)',
-      customerPhoto: ''
+      id: 1,
+      title: 'UMKM Naik Kelas Kota Bekasi',
+      subtitle: 'Ayo dukung UMKM Lokal!',
+      backgroundImage: 'assets/banner/banner-1.jpg',
+      buttonText: 'Lihat Profil Kami',
+      route: '/about-me'
     },
     {
-      customerName: 'Sari Dewi',
-      customerRating: 4.2,
-      problem: 'Ban bocor, butuh ganti ban atau tambal',
-      location: 'Jl. Thamrin No. 45, Jakarta Pusat',
-      distance: 1.8,
-      estimatedTime: '6 menit',
-      fee: 50000,
-      vehicleType: 'Motor',
-      vehicleInfo: 'Yamaha NMAX - Hitam (B 5678 DEF)',
-      customerPhoto: ''
+      id: 2,
+      title: 'Produk Lokal Terbaik',
+      subtitle: 'Temukan produk berkualitas dari UMKM terpercaya',
+      backgroundImage: 'https://images.unsplash.com/photo-1556740738-b6a63e27c4df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
+      buttonText: 'Jelajahi Sekarang'
     },
     {
-      customerName: 'Ahmad Rahman',
-      customerRating: 4.7,
-      problem: 'Susah starter, kemungkinan aki soak',
-      location: 'Jl. Kuningan Raya No. 12, Jakarta Selatan',
-      distance: 2.1,
-      estimatedTime: '9 menit',
-      fee: 60000,
-      vehicleType: 'Motor',
-      vehicleInfo: 'Honda Beat - Putih (B 2468 JKL)',
-      customerPhoto: ''
-    },
-    {
-      customerName: 'Lisa Permata',
-      customerRating: 4.5,
-      problem: 'Rantai motor putus, tidak bisa jalan',
-      location: 'Jl. Kemang Raya No. 77, Jakarta Selatan',
-      distance: 4.5,
-      estimatedTime: '15 menit',
-      fee: 95000,
-      vehicleType: 'Motor',
-      vehicleInfo: 'Kawasaki Ninja - Hijau (B 1357 MNO)',
-      customerPhoto: ''
+      id: 3,
+      title: 'Bergabung dengan Komunitas',
+      subtitle: 'Wujudkan mimpi bisnis Anda bersama kami',
+      backgroundImage: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
+      buttonText: 'Mulai Bisnis'
     }
   ];
 
-  constructor(private toastController: ToastController) {
-    // Add icons
-    addIcons({
-      power,
-      wallet,
-      star,
-      time,
-      wifi,
-      call,
-      chatbubble,
-      location,
-      car,
-      person,
-      checkmarkCircle,
-      closeCircle,
-      notifications,
-      menu,
-      settings,
-      help,
-      refresh
+  categories: Category[] = [];
+  displayedCategories: Category[] = [];
+  newProducts: Product[] = [];
+
+  articles = [
+    {
+      id: 1,
+      title: 'Tips Meningkatkan Penjualan UMKM di Era Digital',
+      summary: 'Pelajari strategi pemasaran digital yang efektif untuk mengembangkan bisnis UMKM Anda',
+      date: '2 hari yang lalu',
+      image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80'
+    },
+    {
+      id: 2,
+      title: 'Program Bantuan Modal untuk UMKM Kota Bekasi',
+      summary: 'Pemerintah Kota Bekasi meluncurkan program bantuan modal bagi pelaku UMKM',
+      date: '5 hari yang lalu',
+      image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80'
+    },
+    {
+      id: 3,
+      title: 'Kisah Sukses UMKM Lokal yang Go Internasional',
+      summary: 'Inspirasi dari pelaku UMKM yang berhasil menembus pasar internasional',
+      date: '1 minggu yang lalu',
+      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80'
+    }
+  ];
+
+  ngOnInit() {
+    // Auto slide functionality
+    this.startAutoSlide();
+    this.loadCategories();
+    this.loadProducts();
+  }
+
+  loadCategories() {
+    this.isLoadingCategories = true;
+    this.productService.getCategories().subscribe({
+      next: (response) => {
+        this.isLoadingCategories = false;
+        if (response.success && response.data) {
+          this.categories = response.data;
+          // Display only first 5 categories on dashboard
+          this.displayedCategories = this.categories.slice(0, 5);
+        }
+      },
+      error: (error) => {
+        this.isLoadingCategories = false;
+        console.error('Error loading categories:', error);
+      }
     });
   }
 
-  ngOnInit() {
-    this.loadInitialData();
+  loadProducts() {
+    this.isLoadingProducts = true;
+    // Load latest products with limit 10
+    this.productService.getProducts({ sortBy: 'terbaru', limit: 10 }).subscribe({
+      next: (response) => {
+        this.isLoadingProducts = false;
+        if (response.success && response.data) {
+          this.newProducts = response.data as Product[];
+        }
+      },
+      error: (error) => {
+        this.isLoadingProducts = false;
+        console.error('Error loading products:', error);
+      }
+    });
+  }
+
+  // Get seller name from product
+  getSellerName(product: Product): string {
+    if (typeof product.sellerId === 'object') {
+      return product.sellerId.namaToko;
+    }
+    return '';
+  }
+
+  // Get seller location from product
+  getSellerLocation(product: Product): string {
+    if (typeof product.sellerId === 'object') {
+      return product.sellerId.domisili;
+    }
+    return '';
+  }
+
+  // Get product main image
+  getProductImage(product: Product): string {
+    return product.foto && product.foto.length > 0 ? product.foto[0] : 'assets/placeholder.jpg';
+  }
+
+  // Map category name to static image
+  getCategoryImage(categoryName: string): string {
+    const categoryMap: { [key: string]: string } = {
+      'Makanan': 'assets/category/Rice.svg',
+      'Minuman': 'assets/category/Drinks.svg',
+      'Manisan': 'assets/category/Sweets.svg',
+      'Bumbu': 'assets/category/Spices.svg',
+      'Kerajinan': 'assets/category/Crafts.svg',
+      'Fashion': 'assets/category/Fashion.svg',
+      'Elektronik': 'assets/category/Electronics.svg',
+      'Sembako': 'assets/category/Rice.svg'
+    };
+
+    return categoryMap[categoryName] || 'assets/category/Rice.svg';
   }
 
   ngOnDestroy() {
-    this.clearTimers();
-  }
-
-  private loadInitialData() {
-    // Load previous session data (in real app, this would come from API/storage)
-    const savedStats = this.loadStatsFromStorage();
-    if (savedStats) {
-      this.stats = { ...this.stats, ...savedStats };
-    }
-    
-    // Check if it's a new day and reset daily stats
-    this.checkAndResetDailyStats();
-  }
-
-  private loadStatsFromStorage(): Partial<DashboardStats> | null {
-    // Simulate loading from local storage
-    // In real app: return JSON.parse(localStorage.getItem('dashboardStats') || 'null');
-    return null;
-  }
-
-  private checkAndResetDailyStats() {
-    const lastResetDate = localStorage.getItem('lastStatsReset');
-    const today = new Date().toDateString();
-    
-    if (lastResetDate !== today) {
-      // Reset daily stats for new day
-      this.stats.todayEarnings = 0;
-      this.stats.completedJobs = 0;
-      this.stats.onlineHours = 0;
-      this.stats.totalJobsToday = 0;
-      localStorage.setItem('lastStatsReset', today);
+    if (this.autoSlideInterval) {
+      clearInterval(this.autoSlideInterval);
     }
   }
 
-  toggleStatus() {
-    this.isOnline = !this.isOnline;
-    
-    if (this.isOnline) {
-      this.goOnline();
-    } else {
-      this.goOffline();
-    }
-  }
-
-  private goOnline() {
-    this.onlineStartTime = new Date();
-    this.showToastMessage('Status Online - Siap menerima order');
-    
-    // Start online timer
-    this.onlineTimer = setInterval(() => {
-      this.updateOnlineHours();
-    }, 60000); // Update every minute
-    
-    // Start order simulation
-    this.startOrderSimulation();
-  }
-
-  private goOffline() {
-    this.showToastMessage('Status Offline - Tidak menerima order');
-    
-    // Update final online hours
-    this.updateOnlineHours();
-    this.onlineStartTime = null;
-    
-    // Clear all orders and timers
-    this.incomingOrders = [];
-    this.clearTimers();
-  }
-
-  private updateOnlineHours() {
-    if (this.onlineStartTime) {
-      const now = new Date();
-      const diffMs = now.getTime() - this.onlineStartTime.getTime();
-      const diffHours = diffMs / (1000 * 60 * 60);
-      this.stats.onlineHours = Math.round(diffHours * 10) / 10; // Round to 1 decimal
-    }
-  }
-
-  private clearTimers() {
-    if (this.onlineTimer) {
-      clearInterval(this.onlineTimer);
-      this.onlineTimer = null;
-    }
-    if (this.orderSimulationTimer) {
-      clearTimeout(this.orderSimulationTimer);
-      this.orderSimulationTimer = null;
-    }
-  }
-
-  private startOrderSimulation() {
-    if (!this.isOnline || this.activeOrder) return;
-
-    // Random delay between 20-60 seconds for new orders
-    const delay = 10000;
-    
-    this.orderSimulationTimer = setTimeout(() => {
-      if (this.isOnline && !this.activeOrder && this.incomingOrders.length < 2) {
-        this.generateNewOrder();
+  startAutoSlide() {
+    this.autoSlideInterval = setInterval(() => {
+      const container = document.querySelector('#sliderContainer') as HTMLElement;
+      if (container) {
+        const slideWidth = container.offsetWidth;
+        const nextSlide = (this.currentSlide + 1) % this.sliderItems.length;
+        container.scrollTo({
+          left: nextSlide * slideWidth,
+          behavior: 'smooth'
+        });
+        this.currentSlide = nextSlide;
       }
-      this.startOrderSimulation(); // Continue simulation
-    }, delay);
+    }, 5000);
   }
 
-  private generateNewOrder() {
-    if (this.sampleOrders.length === 0) return;
-    
-    const randomOrder = this.sampleOrders[Math.floor(Math.random() * this.sampleOrders.length)];
-    const newOrder: Order = {
-      ...randomOrder,
-      id: Date.now().toString(),
-      createdAt: new Date(),
-      // Add some randomness to make it more realistic
-      fee: randomOrder.fee + Math.floor(Math.random() * 20000 - 10000),
-      distance: Math.round((randomOrder.distance + Math.random() * 2 - 1) * 10) / 10
-    };
-    
-    this.incomingOrders.push(newOrder);
-    this.showToastMessage(`Order baru masuk! ${newOrder.customerName} - Rp ${newOrder.fee.toLocaleString()}`);
-  }
+  onScroll(event: any) {
+    const container = event.target;
+    const slideWidth = container.offsetWidth;
+    const scrollLeft = container.scrollLeft;
+    const newSlide = Math.round(scrollLeft / slideWidth);
 
-  acceptOrder(orderId: string) {
-    const orderIndex = this.incomingOrders.findIndex(order => order.id === orderId);
-    if (orderIndex >= 0) {
-      this.activeOrder = this.incomingOrders[orderIndex];
-      this.incomingOrders.splice(orderIndex, 1);
-      this.showToastMessage('Order diterima! Menuju lokasi customer...');
-      
-      // Stop order simulation while having active order
-      if (this.orderSimulationTimer) {
-        clearTimeout(this.orderSimulationTimer);
-        this.orderSimulationTimer = null;
-      }
+    if (newSlide !== this.currentSlide) {
+      this.currentSlide = newSlide;
     }
   }
 
-  declineOrder(orderId: string) {
-    const orderIndex = this.incomingOrders.findIndex(order => order.id === orderId);
-    if (orderIndex >= 0) {
-      this.incomingOrders.splice(orderIndex, 1);
-      this.showToastMessage('Order ditolak');
+  async goToProfile() {
+    const user = this.authService.currentUserValue;
+
+    if (!user) {
+      // User not logged in, show toast
+      const toast = await this.toastController.create({
+        message: 'Silakan login terlebih dahulu untuk mengakses profil',
+        duration: 2500,
+        position: 'top',
+        color: 'warning',
+        cssClass: 'custom-toast'
+      });
+      await toast.present();
+      return;
     }
+
+    // User is logged in, navigate to profile
+    this.router.navigate(['/buyer/profile']);
   }
 
-  completeOrder() {
-    if (this.activeOrder) {
-      // Update stats
-      this.stats.todayEarnings += this.activeOrder.fee;
-      this.stats.completedJobs += 1;
-      this.stats.totalJobsToday += 1;
-      this.stats.currentBalance += this.activeOrder.fee;
-      
-      // Recalculate average rating (simplified)
-      this.stats.averageRating = Math.round(
-        ((this.stats.averageRating * (this.stats.completedJobs - 1)) + 4.8) / this.stats.completedJobs * 10
-      ) / 10;
-      
-      this.showToastMessage(`Order selesai! +Rp ${this.activeOrder.fee.toLocaleString()}`);
-      this.activeOrder = null;
-      
-      // Resume order simulation
-      if (this.isOnline) {
-        this.startOrderSimulation();
-      }
-    }
+  viewProductDetail(productId: string) {
+    this.router.navigate(['/product-detail', productId]);
   }
 
-  navigateToLocation() {
-    this.showToastMessage('Membuka aplikasi maps...');
-    // In real app: open maps with coordinates
-  }
-
-  arriveAtLocation() {
-    this.showToastMessage('Anda telah tiba di lokasi customer');
-    // In real app: update order status
-  }
-
-  callCustomer() {
-    if (this.activeOrder) {
-      this.showToastMessage(`Menelepon ${this.activeOrder.customerName}...`);
-      // In real app: initiate phone call
-    }
-  }
-
-  chatWithCustomer() {
-    if (this.activeOrder) {
-      this.showToastMessage(`Membuka chat dengan ${this.activeOrder.customerName}...`);
-      // In real app: open chat interface
-    }
-  }
-
-  refreshDashboard() {
-    this.showToastMessage('Memperbarui dashboard...');
-    // In real app: fetch latest data from API
-  }
-
-  private showToastMessage(message: string) {
-    this.toastMessage = message;
-    this.showToast = true;
-  }
-
-  // Getter for dashboard state
-  get dashboardState(): 'offline' | 'waiting' | 'has-orders' | 'active-order' {
-    if (!this.isOnline) return 'offline';
-    if (this.activeOrder) return 'active-order';
-    if (this.incomingOrders.length > 0) return 'has-orders';
-    return 'waiting';
-  }
-
-  // Format currency
-  formatCurrency(amount: number): string {
-    return new Intl.NumberFormat('id-ID').format(amount);
-  }
-
-  // Track by function for ngFor performance
-  trackByOrderId(index: number, order: Order): string {
-    return order.id;
-  }
-
-  isModalOpen = false;
-  
-  // Method untuk membuka modal
-  openModal() {
-    this.isModalOpen = true;
-  }
-  
-  // Method untuk menutup modal
-  closeModal() {
-    this.isModalOpen = false;
-  }
-  
-  // Method ketika user konfirmasi
-  onConfirmProcess() {
-    console.log('User confirmed the process');
-    // Lakukan proses yang diperlukan
-    this.closeModal();
-  }
-  
-  // Method ketika user cancel
-  onCancelProcess() {
-    console.log('User cancelled the process');
-    this.closeModal();
+  viewCategoryProducts(categoryName: string) {
+    this.router.navigate(['/products'], {
+      queryParams: { kategori: categoryName }
+    });
   }
 }

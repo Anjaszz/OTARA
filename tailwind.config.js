@@ -4,6 +4,7 @@ module.exports = {
   theme: {
       extend: {
           colors: {
+              "bold-brand-color": "var(--bold-brand-color)",
               "surface-default": "var(--surface-default)",
               "surface-sunken": "var(--surface-sunken)",
               "surface-logo": "var(--surface-logo)",

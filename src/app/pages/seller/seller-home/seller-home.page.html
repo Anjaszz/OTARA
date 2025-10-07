@@ -1,0 +1,81 @@
+<ion-header>
+
+</ion-header>
+
+<ion-content class="bg-gray-50">
+  <div class="p-4 pb-28">
+    <!-- Stats Cards -->
+      <div class="bg-white rounded-lg p-4 shadow-sm mb-4">
+        <p class="text-xs text-gray-500 mb-1">Total Produk</p>
+        <p class="text-2xl font-bold text-gray-800">{{ totalProducts }}</p>
+      </div>
+     
+
+
+    <!-- Header with Add Button -->
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-lg font-semibold text-gray-800">Produk Saya</h2>
+      <ion-button size="medium" color="success" routerLink="/seller/add-product">
+        <ion-icon slot="start" color="light" name="add-circle"></ion-icon>
+        <span class="text-text-white pl-2 font-semibold">Tambah</span>
+      </ion-button>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div *ngIf="isLoading" class="flex justify-center items-center py-8">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+
+    <!-- Products List -->
+    <div *ngIf="!isLoading" class="space-y-3">
+      <!-- Empty State -->
+      <div *ngIf="products.length === 0" class="text-center py-8">
+        <p class="text-gray-500">Belum ada produk</p>
+        <ion-button routerLink="/seller/add-product" class="mt-4">
+          Tambah Produk Pertama
+        </ion-button>
+      </div>
+
+      <!-- Product Cards -->
+      <div
+        *ngFor="let product of products"
+        class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div class="flex p-3 gap-3">
+          <!-- Product Image -->
+          <div class="w-20 h-20 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden">
+            <img [src]="product.foto[0]" [alt]="product.nama" class="w-full h-full object-cover">
+          </div>
+
+          <!-- Product Info -->
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between items-start mb-1">
+              <h3 class="font-semibold text-gray-800 text-sm line-clamp-1">{{ product.nama }}</h3>
+            </div>
+
+            <p class="text-green-600 font-bold text-sm mb-1">Rp {{ product.harga | number }}</p>
+
+            <div class="flex items-center justify-between">
+              <div class="text-xs text-gray-500">
+                <span class="bg-gray-100 px-2 py-1 rounded">{{ product.kategori }}</span>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="flex gap-2">
+                <ion-button size="small" fill="clear" (click)="editProduct(product)">
+                  <ion-icon slot="icon-only" name="create" class="text-blue-500"></ion-icon>
+                </ion-button>
+                <ion-button size="small" fill="clear" (click)="deleteProduct(product)">
+                  <ion-icon slot="icon-only" name="trash" class="text-red-500"></ion-icon>
+                </ion-button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Bottom Navigation -->
+ <app-bottom-navbar></app-bottom-navbar>
+</ion-content>
+
+

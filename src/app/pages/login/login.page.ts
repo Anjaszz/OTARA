@@ -1,14 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
-import { 
-  IonContent, 
-  IonHeader, 
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
+import {
+  IonContent,
+  IonHeader,
   IonSpinner,
   IonToast
 } from '@ionic/angular/standalone';
 import { AuthService, LoginRequest } from 'src/app/services/auth.service';
+import { IconModule } from 'src/app/components/icon/icon.module';
+import { StorageService } from 'src/app/services/storage.service';
 
 @Component({
   selector: 'app-login',
@@ -22,7 +24,7 @@ import { AuthService, LoginRequest } from 'src/app/services/auth.service';
     IonContent,
     IonHeader,
     IonSpinner,
-    IonToast
+    IonToast,IconModule,RouterLink
   ]
 })
 export class LoginPage implements OnInit {
@@ -38,7 +40,8 @@ export class LoginPage implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
-    private authService: AuthService
+    private authService: AuthService,
+    private storageService: StorageService
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -62,12 +65,47 @@ export class LoginPage implements OnInit {
   }
 
   async onSubmit() {
-    localStorage.setItem('isFirstTime', 'false');
-    this.router.navigate(['/dashboard']);
+    if (this.loginForm.valid) {
+      this.isLoading = true;
+
+      const credentials: LoginRequest = {
+        email: this.loginForm.value.email,
+        password: this.loginForm.value.password,
+        rememberMe: this.loginForm.value.rememberMe
+      };
+
+      this.authService.login(credentials).subscribe({
+        next: (response) => {
+          this.isLoading = false;
+
+          // Set bahwa user sudah login (tidak first time lagi)
+          this.storageService.setFirstTimeUser(false);
+          localStorage.setItem('isFirstTime', 'false');
+
+          this.showToastMessage(response.message, 'success');
+
+          // Redirect based on user role from response
+          const userRole = response.data.user.role;
+          const redirectUrl = userRole === 'seller' ? '/seller/home' : '/dashboard';
+
+          setTimeout(() => {
+            this.router.navigate([redirectUrl]);
+          }, 1000);
+        },
+        error: (error) => {
+          this.isLoading = false;
+          const errorMessage = error.message || 'Email atau password salah';
+          this.showToastMessage(errorMessage, 'danger');
+          console.error('Login error:', error);
+        }
+      });
+    } else {
+      this.showToastMessage('Mohon lengkapi email dan password dengan benar.', 'danger');
+    }
   }
 
   navigateToRegister() {
-    this.router.navigate(['/daftar']);
+    this.router.navigate(['/on-boarding']);
   }
 
   forgotPassword() {

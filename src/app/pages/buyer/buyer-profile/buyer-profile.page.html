@@ -1,0 +1,96 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Profil Saya</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bg-gray-50">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="flex justify-center items-center h-screen">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <div *ngIf="!isLoading && buyer" class="p-4">
+    <!-- Profile Card -->
+    <div class="bg-white rounded-lg p-6 shadow-sm mb-4">
+      <div class="flex flex-col items-center mb-6">
+        <ion-avatar class="w-24 h-24 mb-4">
+          <img [src]="'https://ui-avatars.com/api/?name=' + buyer.nama + '&background=59AC77&color=fff&size=200'" [alt]="buyer.nama">
+        </ion-avatar>
+        <div class="text-center">
+          <div class="flex items-center justify-center gap-2 mb-1">
+            <h2 class="text-2xl font-bold text-gray-800">{{ buyer.nama }}</h2>
+            <ion-icon *ngIf="buyer.isVerified" name="checkmark-circle" class="text-blue-500 text-xl"></ion-icon>
+          </div>
+          <p class="text-sm text-gray-500">{{ buyer.email }}</p>
+        </div>
+      </div>
+
+      <ion-button expand="block" fill="outline" color="primary" (click)="editProfile()">
+        Edit Profil
+      </ion-button>
+    </div>
+
+    <!-- Profile Info -->
+    <div class="bg-white rounded-lg shadow-sm mb-4">
+      <h3 class="text-sm font-semibold text-gray-700 px-4 pt-4 pb-2">Informasi Akun</h3>
+      <ion-list>
+        <ion-item>
+          <ion-icon name="person" slot="start" class="text-gray-500"></ion-icon>
+          <ion-label>
+            <p class="text-xs text-gray-500">Nama Lengkap</p>
+            <h3 class="text-sm">{{ buyer.nama }}</h3>
+          </ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-icon name="mail" slot="start" class="text-gray-500"></ion-icon>
+          <ion-label>
+            <p class="text-xs text-gray-500">Email</p>
+            <h3 class="text-sm">{{ buyer.email }}</h3>
+          </ion-label>
+        </ion-item>
+        <ion-item lines="none">
+          <ion-icon name="checkmark-circle" slot="start" [class]="buyer.isVerified ? 'text-green-500' : 'text-gray-400'"></ion-icon>
+          <ion-label>
+            <p class="text-xs text-gray-500">Status Verifikasi</p>
+            <h3 class="text-sm" [class]="buyer.isVerified ? 'text-green-600' : 'text-gray-600'">
+              {{ buyer.isVerified ? 'Terverifikasi' : 'Belum Terverifikasi' }}
+            </h3>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+
+    <!-- Menu Options -->
+    <div class="bg-white rounded-lg shadow-sm mb-4">
+      <ion-list>
+        <ion-item button (click)="openSettings()">
+          <ion-icon name="settings" slot="start" class="text-gray-500"></ion-icon>
+          <ion-label>Pengaturan</ion-label>
+          <ion-icon name="chevron-forward" slot="end" class="text-gray-400"></ion-icon>
+        </ion-item>
+        <ion-item button (click)="openHelp()" lines="none">
+          <ion-icon name="help" slot="start" class="text-orange-500"></ion-icon>
+          <ion-label>Bantuan</ion-label>
+          <ion-icon name="chevron-forward" slot="end" class="text-gray-400"></ion-icon>
+        </ion-item>
+      </ion-list>
+    </div>
+
+    <!-- Account Info -->
+    <div class="bg-white rounded-lg shadow-sm mb-4 p-4">
+      <p class="text-xs text-gray-500 mb-1">Akun dibuat</p>
+      <p class="text-sm text-gray-700">{{ buyer.createdAt | date:'dd MMMM yyyy' }}</p>
+    </div>
+
+    <!-- Logout Button -->
+    <ion-button expand="block" color="danger" (click)="logout()" class="mb-6" [disabled]="isLoggingOut">
+      <ion-spinner *ngIf="isLoggingOut" name="crescent" slot="start"></ion-spinner>
+      <ion-icon *ngIf="!isLoggingOut" slot="start" name="log-out"></ion-icon>
+      {{ isLoggingOut ? 'Logging out...' : 'Keluar' }}
+    </ion-button>
+  </div>
+</ion-content>

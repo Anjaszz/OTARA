@@ -6,7 +6,7 @@
 // environment.ts
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:3000/api',
+  apiUrl: 'https://umkm-naik-kelas-be.vercel.app/api',
 };
 
 /*

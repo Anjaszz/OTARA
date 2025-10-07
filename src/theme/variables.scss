@@ -18,6 +18,7 @@ html {
 }
 
 :root {
+  --ion-color-primary: #59AC77;
   --master-neutral-light-1: #ffffff;
   --master-neutral-light-2: #f7f8f9;
   --master-neutral-light-3: #f2f2f2;
@@ -76,6 +77,7 @@ html {
   --master-red-800: #9c1818;
   --master-red-900: #611f1f;
   --master-red-1000: #3d1a1a;
+  --master-green-brand:#59AC77;
   --master-green-100: #d3efe3;
   --master-green-200: #bdead7;
   --master-green-300: #9de0c4;
@@ -254,6 +256,8 @@ html {
   --shadow-lg: 0px 4px 6px -2px var(--shadow-1), 0px 10px 15px -3px var(--shadow-2);
   --shadow-xl: 0px 10px 10px -5px var(--shadow-1), 0px 20px 25px -5px var(--shadow-2);
   --shadow-2xl: 0px 25px 50px -12px var(--shadow-2);
+
+  --bold-brand-color: var(--master-green-brand);
 }
 
 body.dark {

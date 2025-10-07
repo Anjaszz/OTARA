@@ -1,16 +1,18 @@
 import { Component, OnInit } from '@angular/core';
-import { IonApp, IonRouterOutlet,ToastController } from '@ionic/angular/standalone';
+import { IonApp, IonRouterOutlet, ToastController } from '@ionic/angular/standalone';
 import { AlertComponent } from "./components/alert/alert.component";
 import { Platform } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { App } from '@capacitor/app';
+import { SplashScreen } from '@capacitor/splash-screen';
+import { StatusBar, Style } from '@capacitor/status-bar';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   standalone: true,
-  imports: [ IonApp, IonRouterOutlet, AlertComponent],
+  imports: [IonApp, IonRouterOutlet, AlertComponent],
 })
 export class AppComponent implements OnInit {
   backButtonPressedOnce = false;
@@ -25,36 +27,40 @@ export class AppComponent implements OnInit {
     this.initializeApp();
   }
 
-  initializeApp() {
-    this.platform.ready().then(() => {
-      this.backButtonEvent();
+  async initializeApp() {
+    await this.platform.ready();
+
+    // Configure StatusBar for Android 12+ safe area
+    if (this.platform.is('capacitor')) {
+      await StatusBar.setOverlaysWebView({ overlay: false });
+      await StatusBar.setStyle({ style: Style.Light });
+      await StatusBar.setBackgroundColor({ color: '#59AC77' });
+    }
+
+    // Show splash screen
+    await SplashScreen.show({
+      showDuration: 3000,
+      autoHide: true,
     });
+
+    this.backButtonEvent();
   }
 
   backButtonEvent() {
     this.platform.backButton.subscribeWithPriority(10, () => {
       const url = this.router.url;
-      
-      // Jika berada di halaman root/dashboard
       if (url === '/dashboard' || url === '/masuk' || url === '/') {
         if (this.backButtonPressedOnce) {
-          // Jika sudah ditekan sebelumnya, keluar dari aplikasi
           clearTimeout(this.backButtonTimeout);
           App.exitApp();
         } else {
-          // Set flag bahwa tombol back sudah ditekan sekali
           this.backButtonPressedOnce = true;
-          
-          // Tampilkan toast
           this.presentToast('Tekan sekali lagi untuk keluar');
-          
-          // Reset flag setelah 2 detik jika tombol tidak ditekan lagi
           this.backButtonTimeout = setTimeout(() => {
             this.backButtonPressedOnce = false;
           }, 2000);
         }
       } else {
-        // Navigasi ke halaman sebelumnya
         this.location.back();
       }
     });
@@ -62,15 +68,13 @@ export class AppComponent implements OnInit {
 
   async presentToast(message: string) {
     const toast = await this.toastController.create({
-      message: message,
+      message,
       duration: 3000,
       position: 'bottom',
-      cssClass: 'custom-toast'
+      cssClass: 'custom-toast',
     });
     toast.present();
   }
 
-  ngOnInit() {
-    // Initialize any necessary data or services here
-  }
+  ngOnInit() {}
 }

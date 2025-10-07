@@ -23,7 +23,8 @@ export const ButtonTheme = {
   SUBTLE_DISCOVERY: 'tint-blue-default',
   GENERAL_DISABLE: 'disable-btn',
   GENERAL_NO_BORDER: 'general-no-border',
-  GENERAL_OUTLINE: 'general-outline'
+  GENERAL_OUTLINE: 'general-outline',
+  SOLID_BRAND: 'solid-brand',
 } as const;
 
 export const ButtonSize = {
@@ -91,6 +92,8 @@ const ButtonThemeClass: Record<Const<typeof ButtonTheme>, string> = {
   [ButtonTheme.GENERAL_DISABLE]: 'bg-alpha-1',
   [ButtonTheme.GENERAL_NO_BORDER]: 'bg-surface-default',
   [ButtonTheme.GENERAL_OUTLINE]: 'bg-surface-default border border-line-default',
+  [ButtonTheme.SOLID_BRAND]: 'bg-gradient-to-r from-bold-brand-color to-bold-green-subtle',
+
 };
 
 const defaultTextColors: Record<Const<typeof ButtonTheme>, string> = {
@@ -109,6 +112,7 @@ const defaultTextColors: Record<Const<typeof ButtonTheme>, string> = {
   [ButtonTheme.GENERAL_DISABLE]: 'text-text-subtle',
   [ButtonTheme.GENERAL_NO_BORDER]: ' text-text-subtle',
 [ButtonTheme.GENERAL_OUTLINE]: ' border border-line-default text-text-subtle',
+  [ButtonTheme.SOLID_BRAND]: ' text-white',
 };
 
 

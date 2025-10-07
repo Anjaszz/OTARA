@@ -1,0 +1,139 @@
+<ion-header class="header-custom">
+  <div class="header-content">
+    <button class="icon-btn" (click)="goBack()">
+      <ion-icon name="arrow-back" class="text-white text-xl"></ion-icon>
+    </button>
+    <h1 class="header-title">Detail Produk</h1>
+    <button class="icon-btn" (click)="toggleShareModal()">
+      <ion-icon name="share-outline" class="text-white text-xl"></ion-icon>
+    </button>
+  </div>
+</ion-header>
+
+<ion-content class="content-custom">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p class="loading-text">Memuat produk...</p>
+  </div>
+
+  <!-- Product Content -->
+  <div *ngIf="!isLoading && product" class="product-container">
+
+    <!-- Product Images -->
+    <div class="image-section">
+      <div class="main-image">
+        <img [src]="getCurrentImage()" [alt]="product.nama" class="product-main-image">
+      </div>
+
+      <!-- Image Thumbnails -->
+      <div *ngIf="product.foto && product.foto.length > 1" class="image-thumbnails">
+        <button
+          *ngFor="let foto of product.foto; let i = index"
+          (click)="changeImage(i)"
+          [class]="i === currentImageIndex ? 'thumb-active' : 'thumb'">
+          <img [src]="foto" alt="Product thumbnail" class="thumb-image">
+        </button>
+      </div>
+    </div>
+
+    <!-- Product Info Section -->
+    <div class="info-section">
+      <div class="product-header">
+        <h1 class="product-name">{{ product.nama }}</h1>
+        <span class="product-category">{{ product.kategori }}</span>
+      </div>
+
+      <div class="price-container">
+        <p class="product-price">Rp {{ product.harga | number }}</p>
+      </div>
+
+      <!-- Description Section -->
+      <div class="description-section">
+        <button class="description-header" (click)="toggleDescription()">
+          <span class="description-title">Deskripsi Produk</span>
+          <ion-icon [name]="showDescriptionFull ? 'chevron-up' : 'chevron-down'" class="chevron-icon"></ion-icon>
+        </button>
+
+        <div [class]="showDescriptionFull ? 'description-content-full' : 'description-content-collapsed'">
+          <p class="description-text">{{ product.deskripsi || 'Tidak ada deskripsi' }}</p>
+        </div>
+      </div>
+
+      <!-- Seller Info Section -->
+      <div class="seller-section">
+        <p class="seller-section-title">Informasi Penjual</p>
+        <div class="seller-card">
+          <img [src]="getSellerPhoto()" alt="Seller photo" class="seller-photo">
+          <div class="seller-info">
+            <p class="seller-name">{{ getSellerName() }}</p>
+            <div class="seller-location">
+              <svg class="location-icon" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+              </svg>
+              <span class="location-text">{{ getSellerLocation() }}</span>
+            </div>
+          </div>
+          <button class="view-profile-btn" (click)="viewSellerProfile()">
+            Lihat Profile
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Spacer for Fixed Button -->
+    <div class="bottom-spacer"></div>
+  </div>
+
+  <!-- Fixed Bottom Button -->
+  <div *ngIf="!isLoading && product" class="fixed-bottom">
+    <button class="whatsapp-btn" (click)="contactViaWhatsapp()">
+      <ion-icon name="logo-whatsapp" class="whatsapp-icon"></ion-icon>
+      Pesan via WhatsApp
+    </button>
+  </div>
+</ion-content>
+
+<!-- Share Modal -->
+<ion-modal
+  [isOpen]="showShareModal"
+  (didDismiss)="toggleShareModal()"
+  [initialBreakpoint]="0.4"
+  [breakpoints]="[0, 0.4, 0.6]">
+  <ng-template>
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2 class="modal-title">Bagikan Produk</h2>
+        <button class="modal-close" (click)="toggleShareModal()">
+          <ion-icon name="close" class="text-2xl"></ion-icon>
+        </button>
+      </div>
+
+      <div class="share-options">
+        <button class="share-option" (click)="shareToWhatsapp()">
+          <div class="share-icon-wrapper whatsapp-bg">
+            <ion-icon name="logo-whatsapp" class="share-icon"></ion-icon>
+          </div>
+          <span class="share-label">WhatsApp</span>
+        </button>
+
+        <button class="share-option" (click)="shareToFacebook()">
+          <div class="share-icon-wrapper facebook-bg">
+            <ion-icon name="logo-facebook" class="share-icon"></ion-icon>
+          </div>
+          <span class="share-label">Facebook</span>
+        </button>
+
+        <button class="share-option" (click)="copyLink()">
+          <div class="share-icon-wrapper copy-bg">
+            <svg class="share-icon" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path>
+              <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path>
+            </svg>
+          </div>
+          <span class="share-label">Salin Link</span>
+        </button>
+      </div>
+    </div>
+  </ng-template>
+</ion-modal>

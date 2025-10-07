@@ -1,0 +1,143 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/seller/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Edit Produk</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bg-gray-50">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="flex justify-center items-center h-screen">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  <div *ngIf="!isLoading" class="p-4">
+    <form class="space-y-4">
+      <!-- Image Upload -->
+      <div class="bg-white rounded-lg p-4 shadow-sm">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Foto Produk (1-5 foto) *</label>
+
+        <!-- Hidden file input -->
+        <input
+          type="file"
+          id="fileInput"
+          accept="image/*"
+          multiple
+          (change)="onFileSelected($event)"
+          class="hidden">
+
+        <!-- Existing Images -->
+        <div *ngIf="existingImages.length > 0" class="mb-3">
+          <p class="text-xs text-gray-500 mb-2">Foto yang sudah ada:</p>
+          <div class="grid grid-cols-3 gap-2">
+            <div *ngFor="let img of existingImages; let i = index" class="relative">
+              <img [src]="img" alt="Existing" class="w-full h-24 object-cover rounded-lg">
+              <button
+                type="button"
+                (click)="removeExistingImage(i)"
+                class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center">
+                <ion-icon name="close" class="text-sm"></ion-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upload Area -->
+        <div
+          *ngIf="(existingImages.length + previewImages.length) < 5"
+          class="w-full h-32 bg-gray-100 rounded-lg flex items-center justify-center cursor-pointer border-2 border-dashed border-gray-300 mb-3"
+          (click)="triggerFileInput()">
+          <div class="text-center">
+            <ion-icon name="camera" class="text-4xl text-gray-400 mb-2"></ion-icon>
+            <p class="text-sm text-gray-500">Klik untuk upload foto baru</p>
+            <p class="text-xs text-gray-400">{{ existingImages.length + previewImages.length }}/5 foto</p>
+          </div>
+        </div>
+
+        <!-- New Preview Images -->
+        <div *ngIf="previewImages.length > 0" class="mb-3">
+          <p class="text-xs text-gray-500 mb-2">Foto baru:</p>
+          <div class="grid grid-cols-3 gap-2">
+            <div *ngFor="let img of previewImages; let i = index" class="relative">
+              <img [src]="img" alt="Preview" class="w-full h-24 object-cover rounded-lg">
+              <button
+                type="button"
+                (click)="removeNewImage(i)"
+                class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center">
+                <ion-icon name="close" class="text-sm"></ion-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Name -->
+      <div class="bg-white rounded-lg p-4 shadow-sm">
+        <ion-item lines="none" class="ion-no-padding">
+          <ion-label position="stacked" class="text-sm font-medium text-gray-700 mb-2">Nama Produk *</ion-label>
+          <ion-input
+            [(ngModel)]="product.nama"
+            name="nama"
+            placeholder="Masukkan nama produk"
+            class="border border-gray-300 rounded-lg mt-1"></ion-input>
+        </ion-item>
+      </div>
+
+      <!-- Category -->
+      <div class="bg-white rounded-lg p-4 shadow-sm">
+        <ion-item lines="none" class="ion-no-padding">
+          <ion-label position="stacked" class="text-sm font-medium text-gray-700 mb-2">Kategori *</ion-label>
+          <ion-select
+            [(ngModel)]="product.kategori"
+            name="kategori"
+            placeholder="Pilih kategori"
+            class="border border-gray-300 rounded-lg mt-1">
+            <ion-select-option *ngFor="let cat of categories" [value]="cat.nama">{{ cat.nama }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </div>
+
+      <!-- Price -->
+      <div class="bg-white rounded-lg p-4 shadow-sm">
+        <ion-item lines="none" class="ion-no-padding">
+          <ion-label position="stacked" class="text-sm font-medium text-gray-700 mb-2">Harga *</ion-label>
+          <ion-input
+            [(ngModel)]="product.harga"
+            name="harga"
+            type="number"
+            placeholder="0"
+            class="border border-gray-300 rounded-lg mt-1"></ion-input>
+        </ion-item>
+      </div>
+
+      <!-- Description -->
+      <div class="bg-white rounded-lg p-4 shadow-sm">
+        <ion-item lines="none" class="ion-no-padding">
+          <ion-label position="stacked" class="text-sm font-medium text-gray-700 mb-2">Deskripsi</ion-label>
+          <ion-textarea
+            [(ngModel)]="product.deskripsi"
+            name="deskripsi"
+            rows="4"
+            placeholder="Masukkan deskripsi produk"
+            class="border border-gray-300 rounded-lg mt-1"></ion-textarea>
+        </ion-item>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex gap-3 mt-6 mb-20">
+        <ion-button expand="block" color="medium" (click)="cancel()" class="flex-1" [disabled]="isSaving">
+          Batal
+        </ion-button>
+        <ion-button expand="block" color="success" (click)="saveProduct()" class="flex-1" [disabled]="isSaving">
+          <ion-spinner *ngIf="isSaving" name="crescent" class="mr-2"></ion-spinner>
+          <ion-icon *ngIf="!isSaving" slot="start" name="save"></ion-icon>
+          {{ isSaving ? 'Menyimpan...' : 'Update' }}
+        </ion-button>
+      </div>
+    </form>
+  </div>
+  <!-- Bottom Navigation -->
+  <app-bottom-navbar></app-bottom-navbar>
+</ion-content>

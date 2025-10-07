@@ -3,19 +3,22 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { map, tap, catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 export interface User {
   id: string;
-  name: string;
+  nama?: string;
+  namaToko?: string;
   email: string;
-  currency: string;
-  language: string;
+  role: 'buyer' | 'seller';
+  fotoProfil?: string;
+  currency?: string;
+  language?: string;
   monthlyBudget?: number;
-  avatar?: string;
-  isActive: boolean;
-  lastLogin: Date;
-  createdAt: Date;
-  updatedAt: Date;
+  isActive?: boolean;
+  lastLogin?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface LoginRequest {
@@ -24,13 +27,24 @@ export interface LoginRequest {
   rememberMe?: boolean;
 }
 
-export interface RegisterRequest {
-  name: string;
+export interface RegisterBuyerRequest {
+  nama: string;
   email: string;
   password: string;
-  currency?: string;
-  language?: string;
-  monthlyBudget?: number;
+}
+
+export interface RegisterSellerRequest {
+  namaToko: string;
+  email: string;
+  password: string;
+  domisili: string;
+  jenisUsaha: string;
+  nomorIzinUsaha: string;
+  alamatUsaha: string;
+  whatsapp: string;
+  facebook?: string;
+  instagram?: string;
+  fotoProfil: File;
 }
 
 export interface AuthResponse {
@@ -53,7 +67,7 @@ export interface ApiResponse<T> {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:3000/api'; // Sesuaikan dengan backend URL Anda
+  private apiUrl = environment.apiUrl;
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   private tokenSubject = new BehaviorSubject<string | null>(null);
 
@@ -110,12 +124,47 @@ export class AuthService {
     });
   }
 
-  register(userData: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register`, userData)
+  // Register Buyer
+  registerBuyer(userData: RegisterBuyerRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register/buyer`, userData)
       .pipe(
         tap(response => {
-          if (response.success) {
-            console.log('Registration successful:', response.message);
+          if (response.success && response.data) {
+            this.setAuth(response.data.user, response.data.token);
+            console.log('Registration buyer successful:', response.message);
+          }
+        }),
+        catchError(this.handleError)
+      );
+  }
+
+  // Register Seller (multipart/form-data)
+  registerSeller(sellerData: RegisterSellerRequest): Observable<AuthResponse> {
+    const formData = new FormData();
+
+    formData.append('namaToko', sellerData.namaToko);
+    formData.append('email', sellerData.email);
+    formData.append('password', sellerData.password);
+    formData.append('domisili', sellerData.domisili);
+    formData.append('jenisUsaha', sellerData.jenisUsaha);
+    formData.append('nomorIzinUsaha', sellerData.nomorIzinUsaha);
+    formData.append('alamatUsaha', sellerData.alamatUsaha);
+    formData.append('whatsapp', sellerData.whatsapp);
+
+    if (sellerData.facebook) {
+      formData.append('facebook', sellerData.facebook);
+    }
+    if (sellerData.instagram) {
+      formData.append('instagram', sellerData.instagram);
+    }
+    formData.append('fotoProfil', sellerData.fotoProfil);
+
+    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/register/seller`, formData)
+      .pipe(
+        tap(response => {
+          if (response.success && response.data) {
+            this.setAuth(response.data.user, response.data.token);
+            console.log('Registration seller successful:', response.message);
           }
         }),
         catchError(this.handleError)
@@ -242,5 +291,25 @@ export class AuthService {
   // Method to refresh user data manually
   refreshUserData(): Observable<ApiResponse<User>> {
     return this.getProfile();
+  }
+
+  // Get redirect URL based on user role
+  getRedirectUrl(): string {
+    const user = this.currentUserValue;
+    if (!user) return '/masuk';
+
+    return user.role === 'seller' ? '/seller/home' : '/dashboard';
+  }
+
+  // Check if user is seller
+  isSeller(): boolean {
+    const user = this.currentUserValue;
+    return user?.role === 'seller';
+  }
+
+  // Check if user is buyer
+  isBuyer(): boolean {
+    const user = this.currentUserValue;
+    return user?.role === 'buyer';
   }
 }

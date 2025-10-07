@@ -1,69 +1,53 @@
-<div class="sticky-nav-wrapper">
-  <div class="nav-container">
+<div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2 safe-area-bottom">
+
     <div class="max-w-[1280px] mx-auto">
       <div class="flex w-full justify-between  p-3">
         <!-- Beranda -->
-        <a routerLink="/dashboard" 
+        <a routerLink="/seller/home" 
            routerLinkActive="active-link"
            [routerLinkActiveOptions]="{exact: true}"
            class="flex flex-col items-center gap-[2px] min-w-[4rem]">
           <div class="rounded-full flex items-center justify-center w-full p-1"
-               [ngClass]="{'bg-tint-brand-default': isActive('/dashboard')}">
-            <ic-grid [ngClass]="{'text-text-primary': isActive('/dashboard'), 'text-icon-subtler': !isActive('/dashboard')}" 
+               [ngClass]="{'bg-tint-green-default': isActive('/seller/home')}">
+            <ic-grid [ngClass]="{'text-text-success': isActive('/seller/home'), 'text-icon-subtler': !isActive('/seller/home')}" 
                     color="currentcolor"/>
           </div>
-          <span class="text-xs" [ngClass]="{'text-text-primary': isActive('/dashboard'), 'text-text-subtler': !isActive('/dashboard')}">
+          <span class="text-xs" [ngClass]="{'text-text-success': isActive('/seller/home'), 'text-text-subtler': !isActive('/seller/home')}">
             Home
           </span>
         </a>
 
         <!-- Pesanan -->
-        <a routerLink="/history-order" 
+        <a routerLink="/seller/add-product" 
            routerLinkActive="active-link"
            [routerLinkActiveOptions]="{exact: true}"
-           class="flex flex-col items-center gap-[2px] min-w-[4rem]">
-          <div class="rounded-full flex items-center justify-center w-full p-1"
-               [ngClass]="{'bg-tint-brand-default': isActive('/history-order')}">
-            <ic-box [ngClass]="{'text-text-primary': isActive('/history-order'), 'text-icon-subtler': !isActive('/history-order')}"
-                   color="currentcolor"/>
+           class="flex flex-col items-center gap-[2px] min-w-[4rem] mb-2">
+           <div class="p-2 mb-2 rounded-full bg-gradient-to-r from-bold-brand-color to-bold-green-subtle flex items-center justify-center shadow-lg">
+            <ic-plus />
           </div>
-          <span class="text-xs" [ngClass]="{'text-text-primary': isActive('/history-order'), 'text-text-subtler': !isActive('/history-order')}">
-            History 
+          <span class="text-xs" [ngClass]="{'text-text-success': isActive('/seller/add-product'), 'text-text-subtler': !isActive('/seller/add-product')}">
+            Tambah Produk
           </span>
         </a>
 
-        <!-- Tagihan -->
-        <a routerLink="/wallet-balance" 
-           routerLinkActive="active-link"
-           [routerLinkActiveOptions]="{exact: true}"
-           class="flex flex-col items-center gap-[2px] min-w-[4rem]">
-          <div class="rounded-full flex items-center justify-center w-full p-1"
-               [ngClass]="{'bg-tint-brand-default': isActive('/wallet-balance')}">
-            <ic-cash [ngClass]="{'text-text-primary': isActive('/wallet-balance'), 'text-icon-subtler': !isActive('/wallet-balance')}"
-                    color="currentcolor"/>
-          </div>
-          <span class="text-xs" [ngClass]="{'text-text-primary': isActive('/wallet-balance'), 'text-text-subtler': !isActive('/wallet-balance')}">
-            Saldo
-          </span>
-        </a>
+
 
         <!-- Menu -->
-        <a routerLink="/menu" 
+        <a routerLink="/seller/profile" 
            routerLinkActive="active-link"
            [routerLinkActiveOptions]="{exact: true}"
            class="flex flex-col items-center gap-[2px] min-w-[4rem]">
           <div class="rounded-full flex items-center justify-center w-full p-1"
-               [ngClass]="{'bg-tint-brand-default': isActive('/menu')}">
-            <menu-icon [ngClass]="{'text-text-primary': isActive('/menu'), 'text-icon-subtler': !isActive('/menu')}"
+               [ngClass]="{'bg-tint-green-default': isActive('/seller/profile')}">
+            <menu-icon [ngClass]="{'text-text-success': isActive('/seller/profile'), 'text-icon-subtler': !isActive('/seller/profile')}"
                       color="currentcolor"/>
           </div>
-          <span class="text-xs" [ngClass]="{'text-text-primary': isActive('/menu'), 'text-text-subtler': !isActive('/menu')}">
+          <span class="text-xs" [ngClass]="{'text-text-success': isActive('/seller/profile'), 'text-text-subtler': !isActive('/seller/profile')}">
             Menu
           </span>
         </a>
       </div>
-    </div>
-  </div>
+
   <app-locked-acc-modal  [isOpen]="lockedmodal" (onClose)="closeLockModal()"></app-locked-acc-modal>
 </div>
 

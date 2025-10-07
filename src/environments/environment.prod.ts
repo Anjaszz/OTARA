@@ -1,4 +1,4 @@
 export const environment = {
-  apiUrl: 'https://api.pakdome.com',
+  apiUrl: 'https://umkm-naik-kelas-be.vercel.app/api',
   production: true
 };

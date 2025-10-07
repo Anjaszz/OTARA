@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IconModule } from '../../icon/icon.module';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, Router, RouterLink } from '@angular/router';
 import { LockedAccModalComponent } from "../../modalbox/locked-acc-modal/locked-acc-modal.component";
 
 @Component({
   selector: 'app-bottom-navbar',
   standalone: true,
-  imports: [CommonModule, IconModule, RouterModule, LockedAccModalComponent],
+  imports: [CommonModule, IconModule, RouterModule, LockedAccModalComponent,RouterLink],
   templateUrl: './navbar-bottom.component.html',
   styleUrls: ['./navbar-bottom.component.scss']
 })

@@ -1,0 +1,7 @@
+ion-content {
+  --background: #f9fafb;
+}
+
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}

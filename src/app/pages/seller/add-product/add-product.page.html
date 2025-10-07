@@ -1,0 +1,148 @@
+<ion-header >
+  <ion-toolbar color="primary">
+    <h1 class="text-center text-xl font-medium">Tambah Produk</h1>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="content-custom">
+  <div class="container">
+    <form class="form-container">
+
+      <!-- Image Upload Section -->
+      <div class="upload-section">
+        <label class="section-label">
+          <ion-icon name="camera" class="label-icon"></ion-icon>
+          Foto Produk <span class="text-red-500">*</span>
+        </label>
+
+        <input
+          type="file"
+          id="fileInput"
+          accept="image/*"
+          multiple
+          (change)="onFileSelected($event)"
+          class="hidden">
+
+        <!-- Upload Area -->
+        <div
+          *ngIf="previewImages.length < 5"
+          class="upload-area"
+          (click)="triggerFileInput()">
+          <div class="upload-content">
+            <div class="upload-icon-wrapper">
+              <ion-icon name="cloud-upload" class="upload-icon"></ion-icon>
+            </div>
+            <p class="upload-text">Tap untuk upload foto</p>
+            <p class="upload-subtext">Format: JPG, PNG (Max 5 foto)</p>
+            <div class="upload-counter">{{ previewImages.length }}/5</div>
+          </div>
+        </div>
+
+        <!-- Preview Images -->
+        <div *ngIf="previewImages.length > 0" class="preview-grid">
+          <div *ngFor="let img of previewImages; let i = index" class="preview-item">
+            <img [src]="img" alt="Preview" class="preview-image">
+            <button
+              type="button"
+              (click)="removeImage(i)"
+              class="remove-btn">
+              <ion-icon name="close" class="remove-icon"></ion-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Name -->
+      <div class="input-group">
+        <label class="input-label">
+          Nama Produk <span class="text-red-500">*</span>
+        </label>
+        <input
+          type="text"
+          [(ngModel)]="product.nama"
+          name="nama"
+          placeholder="Contoh: Kopi Arabica Premium"
+          class="custom-input">
+      </div>
+
+      <!-- Category -->
+      <div class="input-group">
+        <label class="input-label">
+          Kategori <span class="text-red-500">*</span>
+        </label>
+        <div class="select-wrapper">
+          <select
+            [(ngModel)]="product.kategori"
+            name="kategori"
+            class="custom-select">
+            <option value="" disabled selected>Pilih kategori produk</option>
+            <option *ngFor="let cat of categories" [value]="cat.nama">{{ cat.nama }}</option>
+          </select>
+          <ion-icon name="chevron-down" class="select-icon"></ion-icon>
+        </div>
+      </div>
+
+      <!-- Price -->
+      <div class="input-group">
+        <label class="input-label">
+          Harga <span class="text-red-500">*</span>
+        </label>
+        <div class="price-input-wrapper">
+          <span class="currency">Rp</span>
+          <input
+            type="text"
+            [value]="formatPrice(product.harga)"
+            (input)="onPriceInput($event)"
+            name="harga"
+            placeholder="0"
+            inputmode="numeric"
+            class="custom-input price-input">
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="input-group">
+        <label class="input-label">Deskripsi</label>
+        <textarea
+          [(ngModel)]="product.deskripsi"
+          name="deskripsi"
+          rows="5"
+          placeholder="Ceritakan tentang produk Anda..."
+          class="custom-textarea"></textarea>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <app-pakdome-button theme="general-outline"
+        (click)="cancel()"
+        [disabled]="isSaving"
+        class="w-full border rounded"
+        >
+          Batal
+        </app-pakdome-button>
+
+        <app-pakdome-button
+        (click)="saveProduct()"
+        theme="solid-brand"
+        [disabled]="isSaving"
+        class="w-full"
+        >
+         <span *ngIf="!isSaving">
+          Simpan Produk
+         </span>
+
+          <span *ngIf="isSaving" class="flex items-center justify-center gap-2">
+            <div class="spinner"></div>
+            Menyimpan...
+          </span>
+        </app-pakdome-button> 
+ 
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <app-bottom-navbar></app-bottom-navbar>
+</ion-content>
+
