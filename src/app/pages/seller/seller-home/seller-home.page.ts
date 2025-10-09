@@ -16,7 +16,8 @@ import {
   IonLabel,
   IonSpinner,
   AlertController,
-  ToastController
+  ToastController,
+  ViewWillEnter
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { addCircle, create, trash, ellipsisVertical } from 'ionicons/icons';
@@ -48,7 +49,7 @@ import { ProductService, Product } from '../../../services/product.service';
   templateUrl: './seller-home.page.html',
   styleUrls: ['./seller-home.page.scss']
 })
-export class SellerHomePage implements OnInit {
+export class SellerHomePage implements OnInit, ViewWillEnter {
   products: Product[] = [];
   totalProducts = 0;
   activeProducts = 0;
@@ -65,6 +66,12 @@ export class SellerHomePage implements OnInit {
   }
 
   ngOnInit() {
+    this.loadProducts();
+  }
+
+  // This lifecycle hook is called every time the page is about to enter
+  ionViewWillEnter() {
+    console.log('Seller home page will enter - refreshing products');
     this.loadProducts();
   }
 
@@ -91,6 +98,10 @@ export class SellerHomePage implements OnInit {
     this.activeProducts = this.products.length; // Semua produk dari API dianggap aktif
     // Revenue bisa dihitung jika ada data penjualan
     this.totalRevenue = 0;
+  }
+
+  viewProductDetail(productId: string) {
+    this.router.navigate(['/detail-product-seller', productId]);
   }
 
   editProduct(product: Product) {

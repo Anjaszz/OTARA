@@ -58,4 +58,17 @@ export class SellerService {
   getSellerProducts(sellerId: string): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/seller/${sellerId}/products`);
   }
+
+  // Update seller profile
+  updateSellerProfile(formData: FormData): Observable<SellerProfileResponse> {
+    const token = localStorage.getItem('kaskita_token');
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+      // Don't set Content-Type for FormData, browser will set it automatically with boundary
+    });
+
+    return this.http.put<SellerProfileResponse>(`${this.apiUrl}/seller/profile`, formData, {
+      headers: headers
+    });
+  }
 }

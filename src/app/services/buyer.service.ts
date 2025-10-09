@@ -40,4 +40,11 @@ export class BuyerService {
       headers: this.getHeaders()
     });
   }
+
+  // Update buyer profile
+  updateBuyerProfile(data: { nama: string }): Observable<BuyerProfileResponse> {
+    return this.http.put<BuyerProfileResponse>(`${this.apiUrl}/buyer/profile`, data, {
+      headers: this.getHeaders()
+    });
+  }
 }

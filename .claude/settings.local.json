@@ -3,7 +3,8 @@
     "allow": [
       "Bash(ionic generate:*)",
       "WebSearch",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(npm install:*)"
     ],
     "deny": [],
     "ask": []

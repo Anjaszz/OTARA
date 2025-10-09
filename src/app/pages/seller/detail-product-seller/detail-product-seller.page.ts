@@ -2,23 +2,24 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { IonContent, IonHeader, IonIcon, IonSpinner, IonModal } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonIcon, IonSpinner, IonModal, IonToolbar } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowBack, shareOutline, close, logoWhatsapp, logoFacebook, logoInstagram, chevronDown, chevronUp } from 'ionicons/icons';
-import { ProductService, Product, SellerInfo } from '../../services/product.service';
-import { SellerService } from '../../services/seller.service';
+import { ProductService, Product, SellerInfo } from '../../../services/product.service';
+import { SellerService } from '../../../services/seller.service';
 import { Share } from '@capacitor/share';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
+import { environment } from 'src/environments/environment';
 
 @Component({
-  selector: 'app-product-detail',
-  templateUrl: './product-detail.page.html',
-  styleUrls: ['./product-detail.page.scss'],
+  selector: 'app-detail-product-seller',
+  templateUrl: './detail-product-seller.page.html',
+  styleUrls: ['./detail-product-seller.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonIcon, IonSpinner, IonModal, CommonModule, FormsModule, RouterLink]
+  imports: [IonToolbar, IonContent, IonHeader, IonIcon, IonSpinner, IonModal, CommonModule, FormsModule, RouterLink]
 })
-export class ProductDetailPage implements OnInit {
+export class DetailProductSellerPage implements OnInit {
+
   product: Product | null = null;
   isLoading = false;
   showShareModal = false;
@@ -60,7 +61,7 @@ export class ProductDetailPage implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/products']);
+    this.router.navigate(['/seller/home']);
   }
 
   toggleShareModal() {
@@ -84,57 +85,6 @@ export class ProductDetailPage implements OnInit {
     return 'assets/placeholder.jpg';
   }
 
-  getSellerName(): string {
-    if (this.product && typeof this.product.sellerId === 'object') {
-      return this.product.sellerId.namaToko;
-    }
-    return '';
-  }
-
-  getSellerPhoto(): string {
-    if (this.product && typeof this.product.sellerId === 'object') {
-      return this.product.sellerId.fotoProfil || 'assets/placeholder-avatar.jpg';
-    }
-    return 'assets/placeholder-avatar.jpg';
-  }
-
-  getSellerLocation(): string {
-    if (this.product && typeof this.product.sellerId === 'object') {
-      return this.product.sellerId.domisili;
-    }
-    return '';
-  }
-
-  getSellerId(): string {
-    if (this.product && typeof this.product.sellerId === 'object') {
-      return this.product.sellerId._id;
-    }
-    return typeof this.product?.sellerId === 'string' ? this.product.sellerId : '';
-  }
-
-  getWhatsappNumber(): string {
-    if (this.product && typeof this.product.sellerId === 'object') {
-      return this.product.sellerId.whatsapp || '';
-    }
-    return '';
-  }
-
-  viewSellerProfile() {
-    const sellerId = this.getSellerId();
-    if (sellerId) {
-      this.router.navigate(['/seller-public-profile', sellerId]);
-    }
-  }
-
-  contactViaWhatsapp() {
-    const whatsappNumber = this.getWhatsappNumber();
-    if (whatsappNumber && this.product) {
-      const message = `Halo, saya tertarik dengan produk *${this.product.nama}* seharga Rp ${this.product.harga.toLocaleString('id-ID')}`;
-      const cleanNumber = whatsappNumber.replace(/[^0-9]/g, '');
-      const whatsappUrl = `https://wa.me/62${cleanNumber}?text=${encodeURIComponent(message)}`;
-      window.open(whatsappUrl, '_blank');
-    }
-  }
 
   async shareToWhatsapp() {
     if (this.product) {
@@ -218,4 +168,5 @@ export class ProductDetailPage implements OnInit {
       console.error('Error sharing product:', error);
     }
   }
+
 }

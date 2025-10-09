@@ -96,6 +96,34 @@ export const routes: Routes = [
     path: 'seller-public-profile/:sellerId',
     loadComponent: () => import('./pages/seller-public-profile/seller-public-profile.page').then( m => m.SellerPublicProfilePage)
   },
+  {
+    path: 'article-detail/:id',
+    loadComponent: () => import('./pages/article-detail/article-detail.page').then( m => m.ArticleDetailPage)
+  },
+  {
+    path: 'edit-profile',
+    loadComponent: () => import('./pages/buyer/edit-profile/edit-profile.page').then( m => m.EditProfilePage)
+  },
+  {
+    path: 'edit-seller-profile',
+    loadComponent: () => import('./pages/seller/edit-seller-profile/edit-seller-profile.page').then( m => m.EditSellerProfilePage)
+  },
+  {
+    path: 'detail-product-seller/:id',
+    loadComponent: () => import('./pages/seller/detail-product-seller/detail-product-seller.page').then( m => m.DetailProductSellerPage)
+  },
+  {
+    path: 'forgot-password',
+    loadComponent: () => import('./pages/forgot-password/forgot-password.page').then( m => m.ForgotPasswordPage)
+  },
+  {
+    path: 'verify-otp',
+    loadComponent: () => import('./pages/verify-otp/verify-otp.page').then( m => m.VerifyOtpPage)
+  },
+  {
+    path: 'reset-password',
+    loadComponent: () => import('./pages/reset-password/reset-password.page').then( m => m.ResetPasswordPage)
+  },
 
 
 ];

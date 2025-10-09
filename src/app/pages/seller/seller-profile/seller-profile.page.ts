@@ -18,20 +18,18 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
-  person,
   mail,
-  call,
   location,
   storefront,
-  wallet,
-  settings,
-  help,
   logOut,
-  chevronForward,
   logoWhatsapp,
   logoFacebook,
   logoInstagram,
-  checkmarkCircle
+  checkmarkCircle,
+  checkmark,
+  createOutline,
+  cube,
+  trendingUp
 } from 'ionicons/icons';
 import { BottomNavbarComponent } from "src/app/components/dashboard/nav-bottom/navbar-bottom.component";
 import { SellerService, SellerProfile } from '../../../services/seller.service';
@@ -80,20 +78,18 @@ export class SellerProfilePage implements OnInit {
     private toastController: ToastController
   ) {
     addIcons({
-      person,
       mail,
-      call,
       location,
       storefront,
-      wallet,
-      settings,
-      help,
       logOut,
-      chevronForward,
       logoWhatsapp,
       logoFacebook,
       logoInstagram,
-      checkmarkCircle
+      checkmarkCircle,
+      checkmark,
+      createOutline,
+      cube,
+      trendingUp
     });
   }
 
@@ -133,8 +129,7 @@ export class SellerProfilePage implements OnInit {
   }
 
   editProfile() {
-    console.log('Edit profile');
-    this.showToast('Fitur edit profil akan segera hadir', 'warning');
+    this.router.navigate(['/edit-seller-profile']);
   }
 
   viewSales() {

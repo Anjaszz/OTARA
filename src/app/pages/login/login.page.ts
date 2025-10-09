@@ -109,7 +109,7 @@ export class LoginPage implements OnInit {
   }
 
   forgotPassword() {
-    this.showToastMessage('Fitur reset password akan segera tersedia.', 'medium');
+    this.router.navigate(['/forgot-password']);
   }
 
   private showToastMessage(message: string, color: string) {

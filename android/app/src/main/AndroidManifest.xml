@@ -14,10 +14,38 @@
             android:theme="@style/AppTheme.NoActionBarLaunch"
             android:launchMode="singleTask"
             android:exported="true">
+            <!-- Main launcher intent -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!-- Custom scheme deep link: umkmapp://product/ID -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="umkmapp" android:host="product" />
+                <data android:scheme="umkmapp" android:host="seller" />
+            </intent-filter>
+
+            <!-- HTTPS Universal Links (will be configured when you have domain) -->
+            <!-- Uncomment and update with your actual domain when deploying -->
+            <!--
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="https"
+                    android:host="your-domain.com"
+                    android:pathPrefix="/product" />
+                <data
+                    android:scheme="https"
+                    android:host="your-domain.com"
+                    android:pathPrefix="/seller" />
+            </intent-filter>
+            -->
         </activity>
 
         <provider

@@ -245,4 +245,8 @@ export class DashboardPage implements OnInit, OnDestroy {
       queryParams: { kategori: categoryName }
     });
   }
+
+  viewArticleDetail(articleId: number) {
+    this.router.navigate(['/article-detail', articleId]);
+  }
 }

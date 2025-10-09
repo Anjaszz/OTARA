@@ -23,10 +23,14 @@ import {
   person,
   mail,
   settings,
-  help,
   logOut,
   chevronForward,
-  checkmarkCircle
+  checkmarkCircle,
+  createOutline,
+  helpCircle,
+  calendar,
+  arrowBack,
+  checkmark
 } from 'ionicons/icons';
 import { BuyerService, BuyerProfile } from '../../../services/buyer.service';
 import { AuthService } from '../../../services/auth.service';
@@ -69,10 +73,14 @@ export class BuyerProfilePage implements OnInit {
       person,
       mail,
       settings,
-      help,
       logOut,
       chevronForward,
-      checkmarkCircle
+      checkmarkCircle,
+      createOutline,
+      helpCircle,
+      calendar,
+      arrowBack,
+      checkmark
     });
   }
 
@@ -97,8 +105,12 @@ export class BuyerProfilePage implements OnInit {
     });
   }
 
+  goBack() {
+    this.router.navigate(['/dashboard']);
+  }
+
   editProfile() {
-    this.showToast('Fitur edit profil akan segera hadir', 'warning');
+    this.router.navigate(['/edit-profile']);
   }
 
   openSettings() {

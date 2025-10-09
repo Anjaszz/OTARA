@@ -128,9 +128,10 @@
         </div>
         
         <div class="grid grid-cols-1 gap-4">
-          <div 
+          <div
             *ngFor="let article of articles"
-            class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 cursor-pointer hover:shadow-md transition-shadow">
+            class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 cursor-pointer hover:shadow-md transition-shadow"
+            (click)="viewArticleDetail(article.id)">
             <div class="flex space-x-3">
               <div class="w-20 h-20 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden">
                 <img [src]="article.image" [alt]="article.title" class="w-full h-full object-cover">

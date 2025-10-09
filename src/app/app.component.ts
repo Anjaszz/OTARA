@@ -4,7 +4,7 @@ import { AlertComponent } from "./components/alert/alert.component";
 import { Platform } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
-import { App } from '@capacitor/app';
+import { App, URLOpenListenerEvent } from '@capacitor/app';
 import { SplashScreen } from '@capacitor/splash-screen';
 import { StatusBar, Style } from '@capacitor/status-bar';
 
@@ -43,7 +43,39 @@ export class AppComponent implements OnInit {
       autoHide: true,
     });
 
+    // Handle deep links
+    this.setupDeepLinking();
+
     this.backButtonEvent();
+  }
+
+  setupDeepLinking() {
+    App.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
+      this.handleDeepLink(event.url);
+    });
+  }
+
+  handleDeepLink(url: string) {
+    console.log('Deep link received:', url);
+
+    // Parse URL: umkmapp://product/PRODUCT_ID
+    // or: https://your-domain.com/product/PRODUCT_ID
+
+    try {
+      if (url.includes('product/')) {
+        const productId = url.split('product/')[1].split('?')[0];
+
+        // Navigate to product detail
+        this.router.navigateByUrl(`/product-detail/${productId}`);
+      } else if (url.includes('seller/')) {
+        const sellerId = url.split('seller/')[1].split('?')[0];
+
+        // Navigate to seller profile
+        this.router.navigateByUrl(`/seller-public-profile/${sellerId}`);
+      }
+    } catch (error) {
+      console.error('Error handling deep link:', error);
+    }
   }
 
   backButtonEvent() {

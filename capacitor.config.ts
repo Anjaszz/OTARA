@@ -4,6 +4,9 @@ const config: CapacitorConfig = {
   appId: 'io.ionic.starter',
   appName: 'UNK Bekasi',
   webDir: 'www',
+  server: {
+    androidScheme: 'https'
+  },
   android: {
     includePlugins: [
        "@capacitor/status-bar",
@@ -13,6 +16,7 @@ const config: CapacitorConfig = {
         "@capawesome/capacitor-file-picker",
         "@capacitor/app",
         "@capacitor/splash-screen",
+        "@capacitor/share",
     ],
   },
   plugins: {
@@ -31,6 +35,9 @@ const config: CapacitorConfig = {
       style: 'LIGHT',
       overlaysWebView: false,
       backgroundColor: '#59AC77'
+    },
+    App: {
+      deepLinkingEnabled: true
     }
   }
 };

@@ -231,8 +231,30 @@ export class AuthService {
 
   changePassword(passwordData: { currentPassword: string; newPassword: string }): Observable<ApiResponse<any>> {
     const headers = this.getHttpHeaders();
-    
+
     return this.http.post<ApiResponse<any>>(`${this.apiUrl}/auth/change-password`, passwordData, { headers })
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  // Forgot Password Flow
+  forgotPassword(email: string): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/auth/forgot-password`, { email })
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  verifyOTP(email: string, otp: string): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/auth/verify-otp`, { email, otp })
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  resetPassword(email: string, newPassword: string): Observable<ApiResponse<any>> {
+    return this.http.post<ApiResponse<any>>(`${this.apiUrl}/auth/reset-password`, { email, newPassword })
       .pipe(
         catchError(this.handleError)
       );

@@ -1,97 +1,153 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>Profil Toko</ion-title>
+<ion-header class="ion-no-border">
+  <ion-toolbar class="bg-[#59AC77]">
+    <div class="text-white font-semibold text-lg">Profil Toko</div>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="bg-gray-50">
   <!-- Loading State -->
   <div *ngIf="isLoading" class="flex justify-center items-center h-screen">
-    <ion-spinner name="crescent"></ion-spinner>
+    <ion-spinner name="crescent" class="text-[#59AC77]"></ion-spinner>
   </div>
 
-  <div *ngIf="!isLoading && seller" class="p-4">
-    <!-- Profile Card -->
-    <div class="bg-white rounded-lg p-6 shadow-sm mb-4">
-      <div class="flex items-center gap-4 mb-4">
-        <ion-avatar class="w-24 h-20 overflow-hidden">
-          <img [src]="seller.fotoProfil" [alt]="seller.namaToko">
-        </ion-avatar>
-        <div class="flex-1">
-          <div class="flex items-center gap-2">
-            <h2 class="text-xl font-bold text-gray-800">{{ seller.namaToko }}</h2>
-            <ion-icon *ngIf="seller.isVerified" name="checkmark-circle" class="text-blue-500 text-xl"></ion-icon>
+  <div *ngIf="!isLoading && seller" class="min-h-full pb-20">
+    <!-- Profile Header Card -->
+    <div class="bg-gradient-to-br from-[#59AC77] to-[#4a9666] px-6 pt-6 pb-8 rounded-b-3xl shadow-lg">
+      <div class="flex flex-col items-center">
+        <!-- Store Photo -->
+        <div class="relative mb-4">
+          <img
+            [src]="seller.fotoProfil"
+            [alt]="seller.namaToko"
+            class="w-28 h-28 rounded-full border-4 border-white shadow-lg object-cover"
+          />
+          <div *ngIf="seller.isVerified" class="absolute bottom-0 right-0 bg-blue-500 rounded-full p-1.5 border-4 border-white">
+            <ion-icon name="checkmark" class="text-white text-sm"></ion-icon>
           </div>
-          <p class="text-sm text-gray-500">{{ seller.jenisUsaha }}</p>
-          <p class="text-xs text-gray-400">{{ seller.domisili }}</p>
+        </div>
+
+        <!-- Store Name & Type -->
+        <h2 class="text-2xl font-bold text-white mb-1 text-center">{{ seller.namaToko }}</h2>
+        <p class="text-white/90 text-sm mb-1">{{ seller.jenisUsaha }}</p>
+        <div class="flex items-center gap-1.5 text-white/80 text-xs mb-4">
+          <ion-icon name="location" class="text-base"></ion-icon>
+          <span>{{ seller.domisili }}</span>
+        </div>
+
+        <!-- Edit Button -->
+        <button
+          (click)="editProfile()"
+          class="bg-white text-[#59AC77] px-6 py-2.5 rounded-full font-medium text-sm shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+        >
+          <ion-icon name="create-outline" class="text-lg"></ion-icon>
+          Edit Profil
+        </button>
+      </div>
+    </div>
+
+    <div class="px-4 py-6">
+      <!-- Contact Information -->
+      <div class="bg-white rounded-2xl shadow-sm mb-4 overflow-hidden">
+        <div class="px-5 py-3 border-b border-gray-100">
+          <h3 class="text-base font-semibold text-gray-800">Informasi Kontak</h3>
+        </div>
+
+        <div class="p-5 space-y-4">
+          <!-- Email -->
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 bg-purple-50 rounded-full flex items-center justify-center flex-shrink-0">
+              <ion-icon name="mail" class="text-purple-600 text-xl"></ion-icon>
+            </div>
+            <div class="flex-1">
+              <p class="text-xs text-gray-500 mb-0.5">Email</p>
+              <p class="text-sm font-medium text-gray-800">{{ seller.email }}</p>
+            </div>
+          </div>
+
+          <!-- WhatsApp -->
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 bg-green-50 rounded-full flex items-center justify-center flex-shrink-0">
+              <ion-icon name="logo-whatsapp" class="text-green-600 text-xl"></ion-icon>
+            </div>
+            <div class="flex-1">
+              <p class="text-xs text-gray-500 mb-0.5">WhatsApp</p>
+              <p class="text-sm font-medium text-gray-800">{{ seller.whatsapp }}</p>
+            </div>
+          </div>
+
+          <!-- Address -->
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 bg-red-50 rounded-full flex items-center justify-center flex-shrink-0">
+              <ion-icon name="location" class="text-red-600 text-xl"></ion-icon>
+            </div>
+            <div class="flex-1">
+              <p class="text-xs text-gray-500 mb-0.5">Alamat Usaha</p>
+              <p class="text-sm font-medium text-gray-800">{{ seller.alamatUsaha }}</p>
+            </div>
+          </div>
+
+          <!-- Business License -->
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 bg-orange-50 rounded-full flex items-center justify-center flex-shrink-0">
+              <ion-icon name="storefront" class="text-orange-600 text-xl"></ion-icon>
+            </div>
+            <div class="flex-1">
+              <p class="text-xs text-gray-500 mb-0.5">Nomor Izin Usaha</p>
+              <p class="text-sm font-medium text-gray-800">{{ seller.nomorIzinUsaha }}</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <ion-button expand="block" fill="outline" color="primary" (click)="editProfile()">
-        Edit Profil
-      </ion-button>
+      <!-- Social Media (if exists) -->
+      <div *ngIf="seller.facebook || seller.instagram" class="bg-white rounded-2xl shadow-sm mb-4 overflow-hidden">
+        <div class="px-5 py-3 border-b border-gray-100">
+          <h3 class="text-base font-semibold text-gray-800">Media Sosial</h3>
+        </div>
+
+        <div class="p-5 space-y-4">
+          <!-- Facebook -->
+          <div *ngIf="seller.facebook" class="flex items-start gap-4">
+            <div class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center flex-shrink-0">
+              <ion-icon name="logo-facebook" class="text-blue-600 text-xl"></ion-icon>
+            </div>
+            <div class="flex-1">
+              <p class="text-xs text-gray-500 mb-0.5">Facebook</p>
+              <p class="text-sm font-medium text-gray-800">{{ seller.facebook }}</p>
+            </div>
+          </div>
+
+          <!-- Instagram -->
+          <div *ngIf="seller.instagram" class="flex items-start gap-4">
+            <div class="w-10 h-10 bg-pink-50 rounded-full flex items-center justify-center flex-shrink-0">
+              <ion-icon name="logo-instagram" class="text-pink-600 text-xl"></ion-icon>
+            </div>
+            <div class="flex-1">
+              <p class="text-xs text-gray-500 mb-0.5">Instagram</p>
+              <p class="text-sm font-medium text-gray-800">{{ seller.instagram }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Logout Button -->
+      <button
+        (click)="logout()"
+        [disabled]="isLoggingOut"
+        class="w-full bg-red-500 hover:bg-red-600 active:bg-red-700 disabled:bg-gray-300 text-white font-medium py-3.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 mb-6"
+      >
+        <ion-spinner *ngIf="isLoggingOut" name="crescent" class="text-white"></ion-spinner>
+        <ion-icon *ngIf="!isLoggingOut" name="log-out" class="text-xl"></ion-icon>
+        <span>{{ isLoggingOut ? 'Logging out...' : 'Keluar' }}</span>
+      </button>
+
+      <!-- App Version -->
+      <div class="text-center py-4">
+        <p class="text-xs text-gray-400">UMKM Naik Kelas v1.0.0</p>
+      </div>
     </div>
-
-
-    <!-- Contact Info -->
-    <div class="bg-white rounded-lg shadow-sm mb-4">
-      <h3 class="text-sm font-semibold text-gray-700 px-4 pt-4 pb-2">Informasi Kontak</h3>
-      <ion-list>
-        <ion-item>
-          <ion-icon name="mail" slot="start" class="text-gray-500"></ion-icon>
-          <ion-label>
-            <p class="text-xs text-gray-500">Email</p>
-            <h3 class="text-sm">{{ seller.email }}</h3>
-          </ion-label>
-        </ion-item>
-        <ion-item>
-          <ion-icon name="logo-whatsapp" slot="start" class="text-green-500"></ion-icon>
-          <ion-label>
-            <p class="text-xs text-gray-500">WhatsApp</p>
-            <h3 class="text-sm">{{ seller.whatsapp }}</h3>
-          </ion-label>
-        </ion-item>
-        <ion-item>
-          <ion-icon name="location" slot="start" class="text-gray-500"></ion-icon>
-          <ion-label>
-            <p class="text-xs text-gray-500">Alamat Usaha</p>
-            <h3 class="text-sm">{{ seller.alamatUsaha }}</h3>
-          </ion-label>
-        </ion-item>
-        <ion-item *ngIf="seller.facebook">
-          <ion-icon name="logo-facebook" slot="start" class="text-blue-600"></ion-icon>
-          <ion-label>
-            <p class="text-xs text-gray-500">Facebook</p>
-            <h3 class="text-sm">{{ seller.facebook }}</h3>
-          </ion-label>
-        </ion-item>
-        <ion-item [lines]="seller.instagram ? 'full' : 'none'" *ngIf="seller.instagram">
-          <ion-icon name="logo-instagram" slot="start" class="text-pink-500"></ion-icon>
-          <ion-label>
-            <p class="text-xs text-gray-500">Instagram</p>
-            <h3 class="text-sm">{{ seller.instagram }}</h3>
-          </ion-label>
-        </ion-item>
-        <ion-item lines="none">
-          <ion-icon name="storefront" slot="start" class="text-gray-500"></ion-icon>
-          <ion-label>
-            <p class="text-xs text-gray-500">Nomor Izin Usaha</p>
-            <h3 class="text-sm">{{ seller.nomorIzinUsaha }}</h3>
-          </ion-label>
-        </ion-item>
-      </ion-list>
-    </div>
-
-
-    <!-- Logout Button -->
-    <ion-button expand="block" color="danger" (click)="logout()" class="mb-20" [disabled]="isLoggingOut">
-      <ion-spinner *ngIf="isLoggingOut" name="crescent" slot="start"></ion-spinner>
-      <ion-icon *ngIf="!isLoggingOut" slot="start" name="log-out"></ion-icon>
-      {{ isLoggingOut ? 'Logging out...' : 'Keluar' }}
-    </ion-button>
   </div>
-    <!-- Bottom Navigation -->
- <app-bottom-navbar></app-bottom-navbar>
+
+  <!-- Bottom Navigation -->
+  <app-bottom-navbar></app-bottom-navbar>
 </ion-content>
-
-

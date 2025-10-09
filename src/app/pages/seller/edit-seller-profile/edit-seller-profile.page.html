@@ -1,0 +1,272 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="bg-[#59AC77]">
+    <ion-buttons slot="start">
+      <button (click)="goBack()" class="p-2">
+        <ion-icon name="arrow-back" class="text-2xl text-white"></ion-icon>
+      </button>
+    </ion-buttons>
+    <div class="text-white font-semibold text-lg">Edit Profil Toko</div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bg-gray-50">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="flex justify-center items-center h-screen">
+    <ion-spinner name="crescent" class="text-[#59AC77]"></ion-spinner>
+  </div>
+
+  <!-- Edit Form -->
+  <div *ngIf="!isLoading && seller" class="min-h-full pb-6">
+    <div class="px-4 py-6">
+      <!-- Photo Upload Card -->
+      <div class="bg-white rounded-2xl shadow-sm mb-4 overflow-hidden">
+        <div class="px-5 py-3 border-b border-gray-100">
+          <h3 class="text-base font-semibold text-gray-800">Foto Profil Toko</h3>
+        </div>
+        <div class="flex flex-col items-center py-6">
+          <div class="relative mb-4">
+            <img
+              [src]="fotoProfilPreview"
+              alt="Preview"
+              class="w-28 h-28 rounded-full border-4 border-gray-100 shadow-md object-cover"
+            />
+            <label
+              for="fileInput"
+              class="absolute bottom-0 right-0 bg-[#59AC77] rounded-full p-2.5 shadow-lg cursor-pointer hover:bg-[#4a9666] transition-colors"
+            >
+              <ion-icon name="camera" class="text-white text-xl"></ion-icon>
+            </label>
+            <input
+              id="fileInput"
+              type="file"
+              accept="image/*"
+              (change)="onFileSelected($event)"
+              class="hidden"
+            />
+          </div>
+          <p class="text-xs text-gray-500 text-center px-4">
+            Klik icon kamera untuk mengganti foto<br />
+            <span class="text-gray-400">Maksimal 5MB (JPG, PNG)</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Basic Information Card -->
+      <div class="bg-white rounded-2xl shadow-sm mb-4 overflow-hidden">
+        <div class="px-5 py-3 border-b border-gray-100">
+          <h3 class="text-base font-semibold text-gray-800">Informasi Dasar</h3>
+        </div>
+
+        <div class="p-5 space-y-4">
+          <!-- Nama Toko -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Nama Toko <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <ion-icon name="storefront" class="text-gray-400 text-lg"></ion-icon>
+              </div>
+              <input
+                type="text"
+                [(ngModel)]="namaToko"
+                placeholder="Masukkan nama toko"
+                [disabled]="isSaving"
+                class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#59AC77] focus:border-[#59AC77] outline-none transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
+              />
+            </div>
+          </div>
+
+          <!-- Domisili -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Domisili <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <ion-icon name="location" class="text-gray-400 text-lg"></ion-icon>
+              </div>
+              <input
+                type="text"
+                [(ngModel)]="domisili"
+                placeholder="Contoh: Jakarta Selatan"
+                [disabled]="isSaving"
+                class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#59AC77] focus:border-[#59AC77] outline-none transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
+              />
+            </div>
+          </div>
+
+          <!-- Jenis Usaha -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Jenis Usaha <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <ion-icon name="business" class="text-gray-400 text-lg"></ion-icon>
+              </div>
+              <input
+                type="text"
+                [(ngModel)]="jenisUsaha"
+                placeholder="Contoh: Sembako & Makanan"
+                [disabled]="isSaving"
+                class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#59AC77] focus:border-[#59AC77] outline-none transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
+              />
+            </div>
+          </div>
+
+          <!-- Nomor Izin Usaha -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Nomor Izin Usaha <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <ion-icon name="document" class="text-gray-400 text-lg"></ion-icon>
+              </div>
+              <input
+                type="text"
+                [(ngModel)]="nomorIzinUsaha"
+                placeholder="Masukkan nomor izin usaha"
+                [disabled]="isSaving"
+                class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#59AC77] focus:border-[#59AC77] outline-none transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Information Card -->
+      <div class="bg-white rounded-2xl shadow-sm mb-4 overflow-hidden">
+        <div class="px-5 py-3 border-b border-gray-100">
+          <h3 class="text-base font-semibold text-gray-800">Informasi Kontak</h3>
+        </div>
+
+        <div class="p-5 space-y-4">
+          <!-- Alamat Usaha -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Alamat Usaha <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <div class="absolute top-3 left-0 pl-3 flex items-start pointer-events-none">
+                <ion-icon name="home" class="text-gray-400 text-lg"></ion-icon>
+              </div>
+              <textarea
+                [(ngModel)]="alamatUsaha"
+                placeholder="Masukkan alamat lengkap usaha"
+                [disabled]="isSaving"
+                rows="3"
+                class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#59AC77] focus:border-[#59AC77] outline-none transition-all disabled:bg-gray-100 disabled:cursor-not-allowed resize-none"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- WhatsApp -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              WhatsApp <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <ion-icon name="logo-whatsapp" class="text-gray-400 text-lg"></ion-icon>
+              </div>
+              <input
+                type="tel"
+                [(ngModel)]="whatsapp"
+                placeholder="Contoh: 081234567890"
+                [disabled]="isSaving"
+                class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#59AC77] focus:border-[#59AC77] outline-none transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Social Media Card (Optional) -->
+      <div class="bg-white rounded-2xl shadow-sm mb-4 overflow-hidden">
+        <div class="px-5 py-3 border-b border-gray-100">
+          <h3 class="text-base font-semibold text-gray-800">Media Sosial <span class="text-xs text-gray-500 font-normal">(Opsional)</span></h3>
+        </div>
+
+        <div class="p-5 space-y-4">
+          <!-- Facebook -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Facebook
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <ion-icon name="logo-facebook" class="text-gray-400 text-lg"></ion-icon>
+              </div>
+              <input
+                type="text"
+                [(ngModel)]="facebook"
+                placeholder="Username Facebook"
+                [disabled]="isSaving"
+                class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#59AC77] focus:border-[#59AC77] outline-none transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
+              />
+            </div>
+          </div>
+
+          <!-- Instagram -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Instagram
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <ion-icon name="logo-instagram" class="text-gray-400 text-lg"></ion-icon>
+              </div>
+              <input
+                type="text"
+                [(ngModel)]="instagram"
+                placeholder="Username Instagram"
+                [disabled]="isSaving"
+                class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#59AC77] focus:border-[#59AC77] outline-none transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Info Box -->
+      <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+        <div class="flex items-start gap-3">
+          <div class="flex-shrink-0">
+            <ion-icon name="information-circle" class="text-blue-500 text-xl"></ion-icon>
+          </div>
+          <div class="flex-1">
+            <p class="text-sm text-blue-800 leading-relaxed">
+              Pastikan informasi yang Anda masukkan akurat dan dapat diverifikasi untuk meningkatkan kepercayaan pembeli.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="space-y-3 mb-6">
+        <!-- Save Button -->
+        <button
+          (click)="saveProfile()"
+          [disabled]="isSaving"
+          class="w-full bg-[#59AC77] hover:bg-[#4a9666] active:bg-[#3d7d55] disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold py-3.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
+        >
+          <ion-spinner *ngIf="isSaving" name="crescent" class="text-white"></ion-spinner>
+          <ion-icon *ngIf="!isSaving" name="checkmark-circle" class="text-xl"></ion-icon>
+          <span>{{ isSaving ? 'Menyimpan...' : 'Simpan Perubahan' }}</span>
+        </button>
+
+        <!-- Cancel Button -->
+        <button
+          (click)="goBack()"
+          [disabled]="isSaving"
+          class="w-full bg-white hover:bg-gray-50 active:bg-gray-100 disabled:bg-gray-100 disabled:cursor-not-allowed text-gray-700 font-medium py-3.5 rounded-xl border-2 border-gray-200 transition-all flex items-center justify-center gap-2"
+        >
+          <ion-icon name="close-circle" class="text-xl"></ion-icon>
+          <span>Batal</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</ion-content>

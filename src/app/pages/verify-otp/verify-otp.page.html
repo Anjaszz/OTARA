@@ -1,0 +1,104 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="bg-transparent">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/forgot-password" color="dark"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="min-h-full flex flex-col justify-center px-4">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <div class="w-20 h-20 bg-gradient-to-br from-[#59AC77] to-[#4a9666] rounded-full mx-auto mb-4 flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+      </div>
+      <h1 class="text-2xl font-bold text-gray-800 mb-2">Verifikasi Kode OTP</h1>
+      <p class="text-gray-600 text-sm">Kami telah mengirim kode OTP ke</p>
+      <p class="text-[#59AC77] font-semibold text-sm">{{ email }}</p>
+    </div>
+
+    <!-- Form -->
+    <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+      <!-- OTP Input -->
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-4 text-center">Masukkan Kode OTP</label>
+        <div class="flex justify-center gap-3">
+          <input
+            #input0
+            type="text"
+            maxlength="1"
+            [(ngModel)]="otpDigits[0]"
+            (input)="onOtpInput($event, 0)"
+            (keydown)="onKeyDown($event, 0)"
+            (paste)="onPaste($event)"
+            class="w-14 h-16 text-center text-2xl font-bold border-2 border-gray-300 rounded-xl focus:outline-none focus:border-[#59AC77] focus:ring-2 focus:ring-[#59AC77] transition-all"
+            [disabled]="isLoading"
+          />
+          <input
+            #input1
+            type="text"
+            maxlength="1"
+            [(ngModel)]="otpDigits[1]"
+            (input)="onOtpInput($event, 1)"
+            (keydown)="onKeyDown($event, 1)"
+            class="w-14 h-16 text-center text-2xl font-bold border-2 border-gray-300 rounded-xl focus:outline-none focus:border-[#59AC77] focus:ring-2 focus:ring-[#59AC77] transition-all"
+            [disabled]="isLoading"
+          />
+          <input
+            #input2
+            type="text"
+            maxlength="1"
+            [(ngModel)]="otpDigits[2]"
+            (input)="onOtpInput($event, 2)"
+            (keydown)="onKeyDown($event, 2)"
+            class="w-14 h-16 text-center text-2xl font-bold border-2 border-gray-300 rounded-xl focus:outline-none focus:border-[#59AC77] focus:ring-2 focus:ring-[#59AC77] transition-all"
+            [disabled]="isLoading"
+          />
+          <input
+            #input3
+            type="text"
+            maxlength="1"
+            [(ngModel)]="otpDigits[3]"
+            (input)="onOtpInput($event, 3)"
+            (keydown)="onKeyDown($event, 3)"
+            class="w-14 h-16 text-center text-2xl font-bold border-2 border-gray-300 rounded-xl focus:outline-none focus:border-[#59AC77] focus:ring-2 focus:ring-[#59AC77] transition-all"
+            [disabled]="isLoading"
+          />
+        </div>
+      </div>
+
+      <!-- Verify Button -->
+      <button
+        (click)="verifyOTP()"
+        [disabled]="isLoading || !isOtpComplete()"
+        class="w-full bg-gradient-to-r from-[#59AC77] to-[#4a9666] text-white py-3 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed mb-4"
+      >
+        <span *ngIf="!isLoading">Verifikasi OTP</span>
+        <span *ngIf="isLoading" class="flex items-center justify-center">
+          <svg class="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Memverifikasi...
+        </span>
+      </button>
+
+      <!-- Resend OTP -->
+      <div class="text-center">
+        <p class="text-gray-600 text-sm mb-2">Tidak menerima kode?</p>
+        <button
+          (click)="resendOTP()"
+          [disabled]="isResending || countdown > 0"
+          class="text-[#59AC77] font-medium text-sm hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <span *ngIf="countdown === 0 && !isResending">Kirim ulang kode</span>
+          <span *ngIf="countdown > 0">Kirim ulang dalam {{ countdown }}s</span>
+          <span *ngIf="isResending">Mengirim ulang...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</ion-content>
