@@ -1,4 +1,4 @@
 export const environment = {
-  apiUrl: 'https://umkm-naik-kelas-be.vercel.app/api',
+  apiUrl: 'https://umkmappstore.com/api',
   production: true
 };

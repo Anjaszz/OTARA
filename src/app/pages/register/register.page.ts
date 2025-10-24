@@ -10,13 +10,28 @@ import {
 import { IconModule } from 'src/app/components/icon/icon.module';
 import { StorageService } from 'src/app/services/storage.service';
 import { AuthService, RegisterSellerRequest } from 'src/app/services/auth.service';
+import { HttpClient } from '@angular/common/http';
+
+interface ProductType {
+  id: number;
+  name: string;
+}
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, IonContent, IonSpinner, IonToast, IconModule,RouterLink],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    IonContent,
+    IonSpinner,
+    IonToast,
+    IconModule,
+    RouterLink
+  ],
   templateUrl: 'register.page.html',
-  styleUrls: []
+  styleUrls: ['register.page.scss']
 })
 export class RegisterPage implements OnInit {
 
@@ -29,11 +44,19 @@ export class RegisterPage implements OnInit {
   toastMessage = '';
   toastColor = 'danger';
 
+  // Modal properties
+  isModalOpen = false;
+  productTypes: ProductType[] = [];
+  filteredProductTypes: ProductType[] = [];
+  searchText = '';
+  selectedProductType: string = '';
+
   constructor(
     private fb: FormBuilder,
     private storageService: StorageService,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private http: HttpClient
   ) {
     this.registerForm = this.fb.group({
       namaToko: ['', Validators.required],
@@ -52,6 +75,49 @@ export class RegisterPage implements OnInit {
 
   ngOnInit() {
     console.log('Register page initialized');
+    this.loadProductTypes();
+  }
+
+  loadProductTypes() {
+    this.http.get<ProductType[]>('assets/data/product-types.json').subscribe({
+      next: (data) => {
+        this.productTypes = data;
+        this.filteredProductTypes = data;
+      },
+      error: (err) => {
+        console.error('Error loading product types:', err);
+      }
+    });
+  }
+
+  openModal() {
+    this.isModalOpen = true;
+    this.searchText = '';
+    this.filteredProductTypes = this.productTypes;
+  }
+
+  closeModal() {
+    this.isModalOpen = false;
+  }
+
+  onSearchChange(event: any) {
+    const searchValue = this.searchText.toLowerCase();
+
+    if (searchValue.trim() === '') {
+      this.filteredProductTypes = this.productTypes;
+    } else {
+      this.filteredProductTypes = this.productTypes.filter(type =>
+        type.name.toLowerCase().includes(searchValue)
+      );
+    }
+  }
+
+  selectProductType(productType: ProductType) {
+    this.selectedProductType = productType.name;
+    this.registerForm.patchValue({
+      jenisProdukUsaha: productType.name
+    });
+    this.closeModal();
   }
 
   onFileSelected(event: any) {

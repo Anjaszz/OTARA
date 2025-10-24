@@ -5,3 +5,27 @@
 ion-content {
   --background: #f9fafb;
 }
+
+// Category Card Layout
+.category-card {
+  min-height: 140px; // Set minimum height for consistency
+  max-height: 140px; // Set maximum height to prevent stretching
+
+  // Image container should not shrink
+  div {
+    flex-shrink: 0;
+  }
+
+  // Text container
+  p {
+    // Limit text to 2 lines
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+    max-height: 2.5em; // Approximately 2 lines
+    min-height: 2.5em; // Keep consistent height even with short text
+  }
+}

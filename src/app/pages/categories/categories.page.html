@@ -23,11 +23,11 @@
       <div
         *ngFor="let category of categories"
         (click)="selectCategory(category)"
-        class="flex flex-col items-center justify-center cursor-pointer hover:shadow-md transition-shadow">
-        <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-2">
+        class="category-card flex flex-col items-center cursor-pointer hover:shadow-md transition-shadow">
+        <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-2 flex-shrink-0">
           <img [src]="getCategoryImage(category.nama)" [alt]="category.nama" class="w-16 h-16 object-contain">
         </div>
-        <p class="text-sm font-semibold text-gray-800 text-center">{{ category.nama }}</p>
+        <p class="text-xs font-semibold text-gray-800 text-center line-clamp-2 leading-tight">{{ category.nama }}</p>
       </div>
     </div>
 

@@ -102,13 +102,13 @@ export class SellerPublicProfilePage implements OnInit {
 
   openFacebook() {
     if (this.seller && this.seller.facebook) {
-      window.open(`https://facebook.com/${this.seller.facebook}`, '_blank');
+      window.open(`${this.seller.facebook}`, '_blank');
     }
   }
 
   openInstagram() {
     if (this.seller && this.seller.instagram) {
-      window.open(`https://instagram.com/${this.seller.instagram}`, '_blank');
+      window.open(`${this.seller.instagram}`, '_blank');
     }
   }
 }

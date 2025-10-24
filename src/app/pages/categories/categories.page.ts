@@ -55,17 +55,14 @@ export class CategoriesPage implements OnInit {
   // Map category name to static image
   getCategoryImage(categoryName: string): string {
     const categoryMap: { [key: string]: string } = {
-      'Makanan': 'assets/category/Rice.svg',
-      'Minuman': 'assets/category/Drinks.svg',
-      'Manisan': 'assets/category/Sweets.svg',
-      'Bumbu': 'assets/category/Spices.svg',
-      'Kerajinan': 'assets/category/Crafts.svg',
-      'Fashion': 'assets/category/Fashion.svg',
-      'Elektronik': 'assets/category/Electronics.svg',
-      'Sembako': 'assets/category/Rice.svg'
+      'Makanan': 'assets/category/Food.svg',
+      'Minuman': 'assets/category/Drink.svg',
+      'Fashion & Pakaian': 'assets/category/Fashion.png',
+      'Kerajian Tangan': 'assets/category/Handicraft.png',
+      'Produk Kecantikan & Perawatan Diri': 'assets/category/Beauty.png'
     };
 
-    return categoryMap[categoryName] || 'assets/category/Rice.svg';
+    return categoryMap[categoryName] || 'assets/category/Food.svg';
   }
 
   selectCategory(category: Category) {

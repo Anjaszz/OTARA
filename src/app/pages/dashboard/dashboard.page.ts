@@ -13,6 +13,7 @@ import { addIcons } from 'ionicons';
 import { person } from 'ionicons/icons';
 import { ProductService, Category, Product, SellerInfo } from '../../services/product.service';
 import { AuthService } from '../../services/auth.service';
+import { HttpClient } from '@angular/common/http';
 
 interface SliderItem {
   id: number;
@@ -21,6 +22,17 @@ interface SliderItem {
   backgroundImage: string;
   buttonText: string;
   route?: string;
+}
+
+interface Article {
+  id: number;
+  title: string;
+  summary: string;
+  date: string;
+  image: string;
+  content?: string;
+  author?: string;
+  category?: string;
 }
 
 @Component({
@@ -47,7 +59,8 @@ export class DashboardPage implements OnInit, OnDestroy {
     private productService: ProductService,
     private authService: AuthService,
     private router: Router,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private http: HttpClient
   ) {
     addIcons({ person });
   }
@@ -55,61 +68,52 @@ export class DashboardPage implements OnInit, OnDestroy {
   sliderItems: SliderItem[] = [
     {
       id: 1,
-      title: 'UMKM Naik Kelas Kota Bekasi',
-      subtitle: 'Ayo dukung UMKM Lokal!',
-      backgroundImage: 'assets/banner/banner-1.jpg',
-      buttonText: 'Lihat Profil Kami',
-      route: '/about-me'
+      title: 'Peluncuran UMKM App Store',
+      subtitle: 'Satu Platform Digital untuk Mendorong UMKM',
+      backgroundImage: 'assets/article/article-1.jpg',
+      buttonText: 'Jelajahi Sekarang',
+      route: '/article-detail/1'
     },
     {
       id: 2,
-      title: 'Produk Lokal Terbaik',
-      subtitle: 'Temukan produk berkualitas dari UMKM terpercaya',
-      backgroundImage: 'https://images.unsplash.com/photo-1556740738-b6a63e27c4df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
-      buttonText: 'Jelajahi Sekarang'
+      title: 'Pemberdayaan UMKM Berbasis Digital',
+      subtitle: 'Peningkatan Mutu Produk dan Strategi Branding Online',
+      backgroundImage: 'assets/article/Picture2.jpg',
+      buttonText: 'Jelajahi Sekarang',
+      route: '/article-detail/2'
     },
     {
       id: 3,
-      title: 'Bergabung dengan Komunitas',
-      subtitle: 'Wujudkan mimpi bisnis Anda bersama kami',
-      backgroundImage: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
-      buttonText: 'Mulai Bisnis'
+      title: 'Pemberdayaan Digital UMKM',
+      subtitle: 'Pemasaran Modern Komunitas Bekasi',
+      backgroundImage: 'assets/article/Picture3.jpg',
+      buttonText: 'Jelajahi Sekarang',
+      route: '/article-detail/3'
     }
   ];
 
   categories: Category[] = [];
   displayedCategories: Category[] = [];
   newProducts: Product[] = [];
-
-  articles = [
-    {
-      id: 1,
-      title: 'Tips Meningkatkan Penjualan UMKM di Era Digital',
-      summary: 'Pelajari strategi pemasaran digital yang efektif untuk mengembangkan bisnis UMKM Anda',
-      date: '2 hari yang lalu',
-      image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80'
-    },
-    {
-      id: 2,
-      title: 'Program Bantuan Modal untuk UMKM Kota Bekasi',
-      summary: 'Pemerintah Kota Bekasi meluncurkan program bantuan modal bagi pelaku UMKM',
-      date: '5 hari yang lalu',
-      image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80'
-    },
-    {
-      id: 3,
-      title: 'Kisah Sukses UMKM Lokal yang Go Internasional',
-      summary: 'Inspirasi dari pelaku UMKM yang berhasil menembus pasar internasional',
-      date: '1 minggu yang lalu',
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80'
-    }
-  ];
+  articles: Article[] = [];
 
   ngOnInit() {
     // Auto slide functionality
     this.startAutoSlide();
     this.loadCategories();
     this.loadProducts();
+    this.loadArticles();
+  }
+
+  loadArticles() {
+    this.http.get<Article[]>('assets/data/articles.json').subscribe({
+      next: (data) => {
+        this.articles = data;
+      },
+      error: (err) => {
+        console.error('Error loading articles:', err);
+      }
+    });
   }
 
   loadCategories() {
@@ -171,17 +175,14 @@ export class DashboardPage implements OnInit, OnDestroy {
   // Map category name to static image
   getCategoryImage(categoryName: string): string {
     const categoryMap: { [key: string]: string } = {
-      'Makanan': 'assets/category/Rice.svg',
-      'Minuman': 'assets/category/Drinks.svg',
-      'Manisan': 'assets/category/Sweets.svg',
-      'Bumbu': 'assets/category/Spices.svg',
-      'Kerajinan': 'assets/category/Crafts.svg',
-      'Fashion': 'assets/category/Fashion.svg',
-      'Elektronik': 'assets/category/Electronics.svg',
-      'Sembako': 'assets/category/Rice.svg'
+      'Makanan': 'assets/category/Food.svg',
+      'Minuman': 'assets/category/Drink.svg',
+      'Fashion & Pakaian': 'assets/category/Fashion.png',
+      'Kerajian Tangan': 'assets/category/Handicraft.png',
+      'Produk Kecantikan & Perawatan Diri': 'assets/category/Beauty.png'
     };
 
-    return categoryMap[categoryName] || 'assets/category/Rice.svg';
+    return categoryMap[categoryName] || 'assets/category/Food.svg';
   }
 
   ngOnDestroy() {
@@ -229,6 +230,7 @@ export class DashboardPage implements OnInit, OnDestroy {
         cssClass: 'custom-toast'
       });
       await toast.present();
+      this.router.navigate(['/on-boarding']);
       return;
     }
 

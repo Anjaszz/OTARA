@@ -17,4 +17,16 @@ ion-select,
 ion-textarea {
   --padding-start: 12px;
   --padding-end: 12px;
+  z-index: 1 !important;
+}
+
+// Ensure ion-item doesn't create stacking context issues
+ion-item {
+  z-index: 1 !important;
+}
+
+// Make sure bottom navbar stays on top
+app-bottom-navbar {
+  z-index: 999 !important;
+  position: relative;
 }

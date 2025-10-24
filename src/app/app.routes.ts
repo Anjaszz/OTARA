@@ -36,29 +36,9 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/categories/categories.page').then( m => m.CategoriesPage),
     canActivate: [buyerGuard]
   },
-  // {
-  //   path: 'add-transaction',
-  //   loadComponent: () => import('./pages/add-transaction/add-transaction.page').then( m => m.AddTransactionPage)
-  // },
-  // {
-  //   path: 'profile',
-  //   loadComponent: () => import('./pages/profile/profile.page').then( m => m.ProfilePage)
-  // },
   {
     path: 'on-boarding',
     loadComponent: () => import('./pages/on-boarding/on-boarding.page').then( m => m.OnBoardingPage)
-  },
-  {
-    path: 'history-order',
-    loadComponent: () => import('./pages/history-order/history-order.page').then( m => m.HistoryOrderPage)
-  },
-  {
-    path: 'wallet-balance',
-    loadComponent: () => import('./pages/wallet-balance/wallet-balance.page').then( m => m.WalletBalancePage)
-  },
-  {
-    path: 'menu',
-    loadComponent: () => import('./pages/app-settings/app-settings.page').then( m => m.AppSettingsPage)
   },
   {
     path: 'seller/home',
