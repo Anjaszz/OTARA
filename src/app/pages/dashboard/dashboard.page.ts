@@ -7,8 +7,7 @@ import {
   IonIcon,
   IonToast,
   IonSpinner,
-  ToastController
-} from '@ionic/angular/standalone';
+  ToastController, IonToolbar } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { person } from 'ionicons/icons';
 import { ProductService, Category, Product, SellerInfo } from '../../services/product.service';
@@ -38,7 +37,7 @@ interface Article {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [
+  imports: [IonToolbar, 
     CommonModule,
     RouterLink,
     IonContent,

@@ -5,8 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import {
   IonContent,
   IonSpinner,
-  IonToast
-} from '@ionic/angular/standalone';
+  IonToast, IonHeader, IonToolbar } from '@ionic/angular/standalone';
 import { IconModule } from 'src/app/components/icon/icon.module';
 import { StorageService } from 'src/app/services/storage.service';
 import { AuthService, RegisterSellerRequest } from 'src/app/services/auth.service';
@@ -20,7 +19,7 @@ interface ProductType {
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [
+  imports: [IonToolbar, IonHeader, 
     CommonModule,
     FormsModule,
     ReactiveFormsModule,

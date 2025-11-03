@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { Router, RouterLink } from '@angular/router';
 import { StorageService } from 'src/app/services/storage.service';
+import { IonContent, IonHeader, IonToolbar } from "@ionic/angular/standalone";
 
 @Component({
   selector: 'app-onboarding',
   standalone: true,
-  imports: [CommonModule, IonicModule,RouterLink],
+  imports: [CommonModule, RouterLink, IonContent, IonHeader, IonToolbar],
   templateUrl: 'on-boarding.page.html',
   styleUrls: []
 })

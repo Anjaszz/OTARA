@@ -28,6 +28,12 @@ import {
   informationCircle
 } from 'ionicons/icons';
 import { SellerService, SellerProfile } from '../../../services/seller.service';
+import { HttpClient } from '@angular/common/http';
+
+interface ProductType {
+  id: number;
+  name: string;
+}
 
 @Component({
   selector: 'app-edit-seller-profile',
@@ -62,10 +68,17 @@ export class EditSellerProfilePage implements OnInit {
   fotoProfil: File | null = null;
   fotoProfilPreview: string = '';
 
+  // Modal properties
+  isModalOpen = false;
+  productTypes: ProductType[] = [];
+  filteredProductTypes: ProductType[] = [];
+  searchText = '';
+
   constructor(
     private router: Router,
     private sellerService: SellerService,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private http: HttpClient
   ) {
     addIcons({
       arrowBack,
@@ -86,6 +99,46 @@ export class EditSellerProfilePage implements OnInit {
 
   ngOnInit() {
     this.loadSellerProfile();
+    this.loadProductTypes();
+  }
+
+  loadProductTypes() {
+    this.http.get<ProductType[]>('assets/data/product-types.json').subscribe({
+      next: (data) => {
+        this.productTypes = data;
+        this.filteredProductTypes = data;
+      },
+      error: (err) => {
+        console.error('Error loading product types:', err);
+      }
+    });
+  }
+
+  openModal() {
+    this.isModalOpen = true;
+    this.searchText = '';
+    this.filteredProductTypes = this.productTypes;
+  }
+
+  closeModal() {
+    this.isModalOpen = false;
+  }
+
+  onSearchChange(event: any) {
+    const searchValue = this.searchText.toLowerCase();
+
+    if (searchValue.trim() === '') {
+      this.filteredProductTypes = this.productTypes;
+    } else {
+      this.filteredProductTypes = this.productTypes.filter(type =>
+        type.name.toLowerCase().includes(searchValue)
+      );
+    }
+  }
+
+  selectProductType(productType: ProductType) {
+    this.jenisUsaha = productType.name;
+    this.closeModal();
   }
 
   loadSellerProfile() {

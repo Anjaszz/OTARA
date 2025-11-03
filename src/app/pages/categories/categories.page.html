@@ -1,4 +1,9 @@
-<ion-header class="relative flex items-center p-6 pt-[calc(env(safe-area-inset-top)+1.5rem)] bg-gray-50 header-costum">
+<ion-header >
+    <ion-toolbar color="primary">
+    </ion-toolbar>
+</ion-header>
+
+<div class=" flex items-center p-6  bg-gray-50 header-costum">
   <!-- Icon di kiri -->
   <div class="p-2 bg-[#F2F2F7] rounded-full h-12 w-12" routerLink="/dashboard">
     <ic-cheveron-right />
@@ -8,9 +13,7 @@
   <div class="absolute left-1/2 transform -translate-x-1/2 bg-[#F2F2F7] py-4 px-14 rounded-full font-medium">
     Kategori
   </div>
-</ion-header>
-
-
+</div>
 <ion-content class="bg-gray-50">
   <!-- Loading State -->
   <div *ngIf="isLoading" class="flex justify-center items-center py-8">

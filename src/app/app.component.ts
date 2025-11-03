@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { IonApp, IonRouterOutlet, ToastController } from '@ionic/angular/standalone';
-import { AlertComponent } from "./components/alert/alert.component";
 import { Platform } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
@@ -12,7 +11,7 @@ import { StatusBar, Style } from '@capacitor/status-bar';
   selector: 'app-root',
   templateUrl: 'app.component.html',
   standalone: true,
-  imports: [IonApp, IonRouterOutlet, AlertComponent],
+  imports: [IonApp, IonRouterOutlet],
 })
 export class AppComponent implements OnInit {
   backButtonPressedOnce = false;
@@ -29,13 +28,6 @@ export class AppComponent implements OnInit {
 
   async initializeApp() {
     await this.platform.ready();
-
-    // Configure StatusBar for Android 12+ safe area
-    if (this.platform.is('capacitor')) {
-      await StatusBar.setOverlaysWebView({ overlay: false });
-      await StatusBar.setStyle({ style: Style.Light });
-      await StatusBar.setBackgroundColor({ color: '#59AC77' });
-    }
 
     // Show splash screen
     await SplashScreen.show({
@@ -108,5 +100,10 @@ export class AppComponent implements OnInit {
     toast.present();
   }
 
-  ngOnInit() {}
+  async ngOnInit() {
+    await StatusBar.setOverlaysWebView({ overlay: true });
+    await StatusBar.setBackgroundColor({ color: '#ffffff' });
+    await StatusBar.setStyle({ style: Style.Dark });
+
+  }
 }

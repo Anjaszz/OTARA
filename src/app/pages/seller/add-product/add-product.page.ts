@@ -6,7 +6,7 @@ import {
   IonContent,
   IonHeader,
   IonIcon,
-  ToastController, IonToolbar, IonTitle } from '@ionic/angular/standalone';
+  ToastController, IonToolbar, IonTitle, IonButtons } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { camera, save, close, arrowBack, cloudUpload, checkmarkCircle, chevronDown } from 'ionicons/icons';
 import { BottomNavbarComponent } from "src/app/components/dashboard/nav-bottom/navbar-bottom.component";
@@ -16,7 +16,7 @@ import { ButtonComponent } from "src/app/components/button/button.component";
 @Component({
   selector: 'app-add-product',
   standalone: true,
-  imports: [IonTitle, IonToolbar,
+  imports: [IonButtons, IonTitle, IonToolbar,
     CommonModule,
     FormsModule,
     IonContent,

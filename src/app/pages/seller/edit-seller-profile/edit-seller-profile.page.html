@@ -1,13 +1,16 @@
-<ion-header class="border-b">
-  <ion-toolbar >
-    <ion-buttons slot="start">
-      <button (click)="goBack()" class="p-2">
-        <ion-icon name="arrow-back" class="text-2xl text-text-bolder"></ion-icon>
-      </button>
-    </ion-buttons>
-    <div class="text-text-bolder font-semibold text-lg">Edit Profil Toko</div>
+<ion-header>
+  <ion-toolbar color="primary">
   </ion-toolbar>
 </ion-header>
+
+<div class="flex gap-2 items-center p-3 border-b border-line-default">
+  <ion-buttons slot="start">
+    <button (click)="goBack()" class="p-2">
+      <ion-icon name="arrow-back" class="text-2xl text-text-bolder"></ion-icon>
+    </button>
+  </ion-buttons>
+  <div class="text-text-bolder font-semibold text-lg">Edit Profil Toko</div>
+</div>
 
 <ion-content class="bg-gray-50">
   <!-- Loading State -->
@@ -101,17 +104,22 @@
             <label class="block text-sm font-medium text-gray-700 mb-2">
               Jenis Usaha <span class="text-red-500">*</span>
             </label>
-            <div class="relative">
+            <div
+              (click)="!isSaving && openModal()"
+              class="relative cursor-pointer"
+              [class.opacity-50]="isSaving"
+              [class.cursor-not-allowed]="isSaving">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <ion-icon name="business" class="text-gray-400 text-lg"></ion-icon>
               </div>
-              <input
-                type="text"
-                [(ngModel)]="jenisUsaha"
-                placeholder="Contoh: Sembako & Makanan"
-                [disabled]="isSaving"
-                class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#59AC77] focus:border-[#59AC77] outline-none transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
-              />
+              <div class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-xl bg-white flex items-center justify-between">
+                <span [class.text-gray-400]="!jenisUsaha" [class.text-gray-900]="jenisUsaha">
+                  {{ jenisUsaha || 'Pilih jenis usaha' }}
+                </span>
+                <svg class="w-5 h-5 text-gray-400 absolute right-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </div>
             </div>
           </div>
 
@@ -266,6 +274,56 @@
           <ion-icon name="close-circle" class="text-xl"></ion-icon>
           <span>Batal</span>
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Modal for Product Type Selection -->
+  <div class="modal-overlay" *ngIf="isModalOpen" (click)="closeModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h2 class="modal-title">Pilih Jenis Produk Usaha</h2>
+        <button type="button" (click)="closeModal()" class="close-button">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body">
+        <!-- Search Bar -->
+        <div class="search-container">
+          <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+          <input
+            type="text"
+            [(ngModel)]="searchText"
+            (input)="onSearchChange($event)"
+            placeholder="Cari jenis produk usaha..."
+            class="search-input">
+        </div>
+
+        <!-- Product Type List -->
+        <div class="product-list">
+          <div
+            *ngFor="let type of filteredProductTypes"
+            (click)="selectProductType(type)"
+            class="product-item"
+            [class.selected]="jenisUsaha === type.name">
+            <span class="product-name">{{ type.name }}</span>
+            <svg *ngIf="jenisUsaha === type.name" class="check-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+
+          <!-- No Results Message -->
+          <div *ngIf="filteredProductTypes.length === 0" class="no-results">
+            <p>Tidak ada hasil yang ditemukan</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>

@@ -32,9 +32,9 @@ const config: CapacitorConfig = {
       androidSplashResourceName: "splash",
     },
     StatusBar: {
-      style: 'LIGHT',
+      style: 'DARK',
       overlaysWebView: false,
-      backgroundColor: '#59AC77'
+      backgroundColor: '#fffff'
     },
     App: {
       deepLinkingEnabled: true

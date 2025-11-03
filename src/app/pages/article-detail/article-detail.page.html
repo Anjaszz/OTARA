@@ -1,13 +1,14 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar class="bg-white">
-    <ion-buttons slot="start">
-      <button (click)="goBack()" class="p-2">
-        <ion-icon name="arrow-back" class="text-2xl text-gray-800"></ion-icon>
-      </button>
-    </ion-buttons>
+<ion-header >
+  <ion-toolbar color="primary">
 
   </ion-toolbar>
 </ion-header>
+
+<ion-buttons slot="start" class="border-b border-line-default bg-surface-default">
+  <button (click)="goBack()" class="px-3 py-4">
+    <ion-icon name="arrow-back" class="text-2xl text-gray-800"></ion-icon>
+  </button>
+</ion-buttons>
 
 <ion-content fullscreen="true" class="bg-white">
   <div *ngIf="article" class="min-h-screen bg-white">

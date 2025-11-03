@@ -4,15 +4,14 @@ import { Router, RouterLink } from '@angular/router';
 import {
   IonContent,
   IonHeader,
-  IonSpinner,
-} from '@ionic/angular/standalone';
+  IonSpinner, IonToolbar } from '@ionic/angular/standalone';
 import { ProductService, Category } from '../../services/product.service';
 import { IconModule } from 'src/app/components/icon/icon.module';
 
 @Component({
   selector: 'app-categories',
   standalone: true,
-  imports: [
+  imports: [IonToolbar, 
     CommonModule,
     IonContent,
     IonHeader,

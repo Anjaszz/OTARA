@@ -1,13 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import {
   IonContent,
   IonHeader,
   IonSpinner,
-  IonToast
-} from '@ionic/angular/standalone';
+  IonToast, IonToolbar } from '@ionic/angular/standalone';
 import { AuthService, LoginRequest } from 'src/app/services/auth.service';
 import { IconModule } from 'src/app/components/icon/icon.module';
 import { StorageService } from 'src/app/services/storage.service';
@@ -17,7 +16,7 @@ import { StorageService } from 'src/app/services/storage.service';
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [
+  imports: [IonToolbar, 
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
@@ -44,10 +43,33 @@ export class LoginPage implements OnInit {
     private storageService: StorageService
   ) {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      emailOrPhone: ['', [Validators.required, this.emailOrPhoneValidator]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       rememberMe: [false]
     });
+  }
+
+  // Custom validator untuk email atau nomor telepon
+  emailOrPhoneValidator(control: AbstractControl): ValidationErrors | null {
+    if (!control.value) {
+      return null; // Biarkan Validators.required yang handle
+    }
+
+    const value = control.value.trim();
+
+    // Cek apakah ini nomor telepon (hanya digit, bisa diawali +)
+    const phonePattern = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/;
+    const isPhone = /^[\+]?[0-9]{10,15}$/.test(value.replace(/[\s\-\(\)]/g, ''));
+
+    // Cek apakah ini email
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const isEmail = emailPattern.test(value);
+
+    if (isEmail || isPhone) {
+      return null; // Valid
+    }
+
+    return { emailOrPhone: true }; // Invalid
   }
 
   ngOnInit() {
@@ -69,7 +91,7 @@ export class LoginPage implements OnInit {
       this.isLoading = true;
 
       const credentials: LoginRequest = {
-        email: this.loginForm.value.email,
+        emailOrPhone: this.loginForm.value.emailOrPhone,
         password: this.loginForm.value.password,
         rememberMe: this.loginForm.value.rememberMe
       };
@@ -94,13 +116,13 @@ export class LoginPage implements OnInit {
         },
         error: (error) => {
           this.isLoading = false;
-          const errorMessage = error.message || 'Email atau password salah';
+          const errorMessage = error.message || 'Email/nomor telepon atau password salah';
           this.showToastMessage(errorMessage, 'danger');
           console.error('Login error:', error);
         }
       });
     } else {
-      this.showToastMessage('Mohon lengkapi email dan password dengan benar.', 'danger');
+      this.showToastMessage('Mohon lengkapi email/nomor telepon dan password dengan benar.', 'danger');
     }
   }
 
@@ -118,8 +140,12 @@ export class LoginPage implements OnInit {
     this.showToast = true;
   }
 
+  get emailOrPhone() {
+    return this.loginForm.get('emailOrPhone');
+  }
+
   get email() {
-    return this.loginForm.get('email');
+    return this.emailOrPhone; // Alias untuk backward compatibility di template
   }
 
   get password() {

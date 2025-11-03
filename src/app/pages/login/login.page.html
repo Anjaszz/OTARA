@@ -1,3 +1,7 @@
+<ion-header>
+  <ion-toolbar color="primary">
+  </ion-toolbar>
+</ion-header>
 <ion-content>
   <div class="flex flex-col min-h-full bg-surface-drop px-6 py-8 text-text-subtle">
     
@@ -10,21 +14,21 @@
     <div class=" mb-6 mt-8">
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-4">
         
-        <!-- Email Field -->
+        <!-- Email or Phone Field -->
         <div class="space-y-2">
           <label class="text-gray-700 font-medium text-sm">Email atau Nomor Telepon</label>
           <div class="relative">
-           
+
             <input
-              formControlName="email"
-              type="email"
-              placeholder="Masukkan email Anda"
+              formControlName="emailOrPhone"
+              type="text"
+              placeholder="Masukkan email atau nomor telepon"
               class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-emerald-500 transition-colors"
-              [class.border-red-500]="email?.invalid && email?.touched">
+              [class.border-red-500]="emailOrPhone?.invalid && emailOrPhone?.touched">
           </div>
-          <div *ngIf="email?.invalid && email?.touched" class="text-red-500 text-xs mt-1">
-            <span *ngIf="email?.errors?.['required']">Email wajib diisi</span>
-            <span *ngIf="email?.errors?.['email']">Format email tidak valid</span>
+          <div *ngIf="emailOrPhone?.invalid && emailOrPhone?.touched" class="text-red-500 text-xs mt-1">
+            <span *ngIf="emailOrPhone?.errors?.['required']">Email atau nomor telepon wajib diisi</span>
+            <span *ngIf="emailOrPhone?.errors?.['emailOrPhone']">Format email atau nomor telepon tidak valid</span>
           </div>
         </div>
 
