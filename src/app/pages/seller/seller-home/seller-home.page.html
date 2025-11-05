@@ -3,7 +3,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="bg-gray-50">
+<ion-content class="bg-gray-50" (ionScroll)="onScroll($event)" [scrollEvents]="true">
   <div class="p-4 pb-28">
     <!-- Stats Cards -->
       <div class="bg-white rounded-lg p-4 shadow-sm mb-4">
@@ -59,7 +59,7 @@
               </h3>
             </div>
 
-            <p class="text-green-600 font-bold text-sm mb-1">Rp {{ product.harga | number }}</p>
+            <p class="text-green-600 font-bold text-sm mb-1">Rp {{ product.harga | idrCurrency }}</p>
 
             <div class="flex items-center justify-between">
               <div class="text-xs text-gray-500">
@@ -78,6 +78,17 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Load More Indicator -->
+      <div *ngIf="isLoadingMore && !isLoading" class="flex justify-center items-center py-4">
+        <ion-spinner name="crescent" color="success"></ion-spinner>
+        <span class="ml-2 text-gray-600 text-sm">Memuat produk...</span>
+      </div>
+
+      <!-- No More Data Message -->
+      <div *ngIf="!isLoadingMore && !isLoading && !hasMoreData && products.length > 0" class="text-center py-4">
+        <p class="text-gray-500 text-sm">Semua produk telah dimuat</p>
       </div>
     </div>
   </div>

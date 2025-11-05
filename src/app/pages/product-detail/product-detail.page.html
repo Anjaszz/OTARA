@@ -45,7 +45,7 @@
       </div>
 
       <div class="price-container">
-        <p class="product-price">Rp {{ product.harga | number }}</p>
+        <p class="product-price">Rp {{ product.harga | idrCurrency }}</p>
       </div>
 
       <!-- Description Section -->
@@ -63,15 +63,17 @@
       <!-- Seller Info Section -->
       <div class="seller-section">
         <p class="seller-section-title">Informasi Penjual</p>
-        <div class="seller-card">
-          <img [src]="getSellerPhoto()" alt="Seller photo" class="seller-photo">
-          <div class="seller-info">
-            <p class="seller-name">{{ getSellerName() }}</p>
-            <div class="seller-location">
-              <svg class="location-icon" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
-              </svg>
-              <span class="location-text">{{ getSellerLocation() }}</span>
+        <div class="flex flex-col gap-2 seller-card">
+          <div class="flex gap-2">
+            <img [src]="getSellerPhoto()" alt="Seller photo" class="seller-photo">
+            <div class="seller-info">
+              <p class="seller-name">{{ getSellerName() }}</p>
+              <div class="seller-location">
+                <svg class="location-icon" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="location-text">{{ getSellerLocation() }}</span>
+              </div>
             </div>
           </div>
           <button class="view-profile-btn" (click)="viewSellerProfile()">

@@ -7,13 +7,14 @@ import { addIcons } from 'ionicons';
 import { arrowBack, locationOutline, callOutline, logoWhatsapp, logoFacebook, logoInstagram, storefrontOutline } from 'ionicons/icons';
 import { SellerService, SellerProfile } from '../../services/seller.service';
 import { Product } from '../../services/product.service';
+import { IdrCurrencyPipe } from '../../pipes/idr-currency.pipe';
 
 @Component({
   selector: 'app-seller-public-profile',
   templateUrl: './seller-public-profile.page.html',
   styleUrls: ['./seller-public-profile.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonIcon, IonSpinner, CommonModule, FormsModule,RouterLink]
+  imports: [IonContent, IonHeader, IonIcon, IonSpinner, CommonModule, FormsModule, RouterLink, IdrCurrencyPipe]
 })
 export class SellerPublicProfilePage implements OnInit {
   seller: SellerProfile | null = null;

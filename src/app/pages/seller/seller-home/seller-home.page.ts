@@ -17,6 +17,7 @@ import { addCircle, create, trash, ellipsisVertical } from 'ionicons/icons';
 import { RouterLink } from '@angular/router';
 import { BottomNavbarComponent } from "src/app/components/dashboard/nav-bottom/navbar-bottom.component";
 import { ProductService, Product } from '../../../services/product.service';
+import { IdrCurrencyPipe } from '../../../pipes/idr-currency.pipe';
 
 @Component({
   selector: 'app-seller-home',
@@ -30,7 +31,8 @@ import { ProductService, Product } from '../../../services/product.service';
     IonIcon,
     IonSpinner,
     RouterLink,
-    BottomNavbarComponent
+    BottomNavbarComponent,
+    IdrCurrencyPipe
   ],
   templateUrl: './seller-home.page.html',
   styleUrls: ['./seller-home.page.scss']
@@ -41,6 +43,10 @@ export class SellerHomePage implements OnInit, ViewWillEnter {
   activeProducts = 0;
   totalRevenue = 0;
   isLoading = false;
+  isLoadingMore = false;
+  currentPage = 1;
+  totalPages = 1;
+  hasMoreData = true;
 
   constructor(
     private router: Router,
@@ -52,36 +58,75 @@ export class SellerHomePage implements OnInit, ViewWillEnter {
   }
 
   ngOnInit() {
-    this.loadProducts();
+    this.loadProducts(true);
   }
 
   // This lifecycle hook is called every time the page is about to enter
   ionViewWillEnter() {
     console.log('Seller home page will enter - refreshing products');
-    this.loadProducts();
+    this.loadProducts(true);
   }
 
-  loadProducts() {
-    this.isLoading = true;
-    this.productService.getSellerProducts().subscribe({
+  loadProducts(reset: boolean = false) {
+    if (reset) {
+      this.currentPage = 1;
+      this.products = [];
+      this.hasMoreData = true;
+      this.isLoading = true;
+    } else {
+      this.isLoadingMore = true;
+    }
+
+    if (!this.hasMoreData) return;
+
+    this.productService.getSellerProducts(this.currentPage).subscribe({
       next: (response) => {
         this.isLoading = false;
+        this.isLoadingMore = false;
+
         if (response.success && response.data) {
-          this.products = response.data as Product[];
+          const newProducts = response.data as Product[];
+
+          if (reset) {
+            this.products = newProducts;
+          } else {
+            this.products = [...this.products, ...newProducts];
+          }
+
+          // Update pagination info
+          this.totalProducts = response.total || 0;
+          this.totalPages = response.pages || 1;
+          this.hasMoreData = this.currentPage < this.totalPages;
+
           this.calculateStats();
         }
       },
       error: (error) => {
         this.isLoading = false;
+        this.isLoadingMore = false;
         console.error('Error loading products:', error);
         this.showToast('Gagal memuat produk', 'danger');
       }
     });
   }
 
+  onScroll(event: any) {
+    const scrollElement = event.target;
+    const scrollPosition = scrollElement.scrollTop + scrollElement.clientHeight;
+    const scrollHeight = scrollElement.scrollHeight;
+
+    // Load more only when user reaches the bottom (with 10px tolerance for precision)
+    const distanceFromBottom = scrollHeight - scrollPosition;
+
+    if (distanceFromBottom <= 10 && !this.isLoadingMore && this.hasMoreData && !this.isLoading) {
+      this.currentPage++;
+      this.loadProducts(false);
+    }
+  }
+
   calculateStats() {
-    this.totalProducts = this.products.length;
-    this.activeProducts = this.products.length; // Semua produk dari API dianggap aktif
+    // totalProducts sudah di-set dari response.total di loadProducts()
+    this.activeProducts = this.products.length; // Total produk yang sudah di-load
     // Revenue bisa dihitung jika ada data penjualan
     this.totalRevenue = 0;
   }

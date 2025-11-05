@@ -110,7 +110,7 @@
           </div>
           <div class="product-info">
             <h3 class="product-name">{{ product.nama }}</h3>
-            <p class="product-price">Rp {{ product.harga | number }}</p>
+            <p class="product-price">Rp {{ product.harga | idrCurrency }}</p>
             <span class="product-category">{{ product.kategori }}</span>
           </div>
         </div>

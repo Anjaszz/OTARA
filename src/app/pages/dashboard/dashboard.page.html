@@ -101,7 +101,7 @@
             </div>
             <div class="p-3">
               <h3 class="font-medium text-gray-800 text-sm mb-1 line-clamp-1">{{ product.nama }}</h3>
-              <p class="text-green-600 font-semibold text-sm mb-1">Rp {{ product.harga | number }}</p>
+              <p class="text-green-600 font-semibold text-sm mb-1">Rp {{ product.harga | idrCurrency }}</p>
               <p class="text-gray-600 text-xs mb-1">{{ getSellerName(product) }}</p>
               <div class="flex items-center text-gray-500 text-xs">
                 <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">

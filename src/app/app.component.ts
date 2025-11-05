@@ -101,9 +101,9 @@ export class AppComponent implements OnInit {
   }
 
   async ngOnInit() {
-    await StatusBar.setOverlaysWebView({ overlay: true });
+    await StatusBar.setOverlaysWebView({ overlay: false });
     await StatusBar.setBackgroundColor({ color: '#ffffff' });
-    await StatusBar.setStyle({ style: Style.Dark });
+    await StatusBar.setStyle({ style: Style.Light });
 
   }
 }

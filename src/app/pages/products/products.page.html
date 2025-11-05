@@ -10,7 +10,7 @@
   </div>
 </ion-header>
 
-<ion-content class="content-custom">
+<ion-content class="content-custom" (ionScroll)="onScroll($event)" [scrollEvents]="true">
   <div class="container">
 
     <!-- Search Bar -->
@@ -97,7 +97,7 @@
         </div>
         <div class="product-info">
           <h3 class="product-name">{{ product.nama }}</h3>
-          <p class="product-price">Rp {{ product.harga | number }}</p>
+          <p class="product-price">Rp {{ product.harga | idrCurrency }}</p>
           <p class="product-seller">{{ getSellerName(product) }}</p>
           <div class="product-location">
             <svg class="location-icon" fill="currentColor" viewBox="0 0 20 20">
@@ -115,6 +115,17 @@
       <p class="empty-title">Produk tidak ditemukan</p>
       <p class="empty-text">Coba ubah kata kunci atau filter pencarian Anda</p>
       <button (click)="clearAllFilters()" class="empty-btn">Reset Filter</button>
+    </div>
+
+    <!-- Load More Indicator -->
+    <div *ngIf="isLoadingMore && !isLoading" class="loading-more">
+      <ion-spinner name="crescent" color="success"></ion-spinner>
+      <p class="loading-more-text">Memuat produk...</p>
+    </div>
+
+    <!-- No More Data Message -->
+    <div *ngIf="!isLoadingMore && !isLoading && !hasMoreData && products.length > 0" class="no-more-data">
+      <p class="no-more-text">Semua produk telah dimuat</p>
     </div>
 
   </div>

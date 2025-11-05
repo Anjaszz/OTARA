@@ -13,6 +13,7 @@ import { person } from 'ionicons/icons';
 import { ProductService, Category, Product, SellerInfo } from '../../services/product.service';
 import { AuthService } from '../../services/auth.service';
 import { HttpClient } from '@angular/common/http';
+import { IdrCurrencyPipe } from '../../pipes/idr-currency.pipe';
 
 interface SliderItem {
   id: number;
@@ -37,13 +38,14 @@ interface Article {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [IonToolbar, 
+  imports: [IonToolbar,
     CommonModule,
     RouterLink,
     IonContent,
     IonHeader,
     IonIcon,
-    IonSpinner
+    IonSpinner,
+    IdrCurrencyPipe
   ],
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.scss']
@@ -176,7 +178,7 @@ export class DashboardPage implements OnInit, OnDestroy {
     const categoryMap: { [key: string]: string } = {
       'Makanan': 'assets/category/Food.svg',
       'Minuman': 'assets/category/Drink.svg',
-      'Fashion & Pakaian': 'assets/category/Fashion.png',
+      'Fashion & Aksesoris': 'assets/category/Fashion.png',
       'Kerajian Tangan': 'assets/category/Handicraft.png',
       'Produk Kecantikan & Perawatan Diri': 'assets/category/Beauty.png'
     };

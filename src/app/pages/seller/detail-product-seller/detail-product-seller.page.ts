@@ -10,13 +10,14 @@ import { SellerService } from '../../../services/seller.service';
 import { Share } from '@capacitor/share';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
+import { IdrCurrencyPipe } from '../../../pipes/idr-currency.pipe';
 
 @Component({
   selector: 'app-detail-product-seller',
   templateUrl: './detail-product-seller.page.html',
   styleUrls: ['./detail-product-seller.page.scss'],
   standalone: true,
-  imports: [IonToolbar, IonContent, IonHeader, IonIcon, IonSpinner, IonModal, CommonModule, FormsModule, RouterLink]
+  imports: [IonToolbar, IonContent, IonHeader, IonIcon, IonSpinner, IonModal, CommonModule, FormsModule, RouterLink, IdrCurrencyPipe]
 })
 export class DetailProductSellerPage implements OnInit {
 

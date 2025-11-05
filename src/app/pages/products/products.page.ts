@@ -6,19 +6,21 @@ import { IonContent, IonHeader, IonIcon, IonSpinner } from '@ionic/angular/stand
 import { addIcons } from 'ionicons';
 import { arrowBack, searchOutline, closeCircle, funnelOutline } from 'ionicons/icons';
 import { ProductService, Product, Category, SellerInfo } from '../../services/product.service';
+import { IdrCurrencyPipe } from '../../pipes/idr-currency.pipe';
 
 @Component({
   selector: 'app-products',
   templateUrl: './products.page.html',
   styleUrls: ['./products.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonIcon, IonSpinner, CommonModule, FormsModule, RouterLink]
+  imports: [IonContent, IonHeader, IonIcon, IonSpinner, CommonModule, FormsModule, RouterLink, IdrCurrencyPipe]
 })
 export class ProductsPage implements OnInit {
   products: Product[] = [];
   categories: Category[] = [];
   isLoading = false;
   isLoadingCategories = false;
+  isLoadingMore = false;
 
   // Filter state
   searchQuery = '';
@@ -31,6 +33,7 @@ export class ProductsPage implements OnInit {
   totalPages = 1;
   totalProducts = 0;
   limit = 20;
+  hasMoreData = true;
 
   constructor(
     private productService: ProductService,
@@ -69,8 +72,17 @@ export class ProductsPage implements OnInit {
     });
   }
 
-  loadProducts() {
-    this.isLoading = true;
+  loadProducts(reset: boolean = true) {
+    if (reset) {
+      this.currentPage = 1;
+      this.products = [];
+      this.hasMoreData = true;
+      this.isLoading = true;
+    } else {
+      this.isLoadingMore = true;
+    }
+
+    if (!this.hasMoreData) return;
 
     const params: any = {
       sortBy: this.selectedSort,
@@ -89,41 +101,62 @@ export class ProductsPage implements OnInit {
     this.productService.getProducts(params).subscribe({
       next: (response) => {
         this.isLoading = false;
+        this.isLoadingMore = false;
+
         if (response.success && response.data) {
-          this.products = response.data as Product[];
+          const newProducts = response.data as Product[];
+
+          if (reset) {
+            this.products = newProducts;
+          } else {
+            this.products = [...this.products, ...newProducts];
+          }
+
           this.totalProducts = response.total || 0;
           this.totalPages = response.pages || 1;
+          this.hasMoreData = this.currentPage < this.totalPages;
         }
       },
       error: (error) => {
         this.isLoading = false;
+        this.isLoadingMore = false;
         console.error('Error loading products:', error);
       }
     });
   }
 
+  onScroll(event: any) {
+    const scrollElement = event.target;
+    const scrollPosition = scrollElement.scrollTop + scrollElement.clientHeight;
+    const scrollHeight = scrollElement.scrollHeight;
+
+    // Load more only when user reaches the bottom (with 10px tolerance for precision)
+    const distanceFromBottom = scrollHeight - scrollPosition;
+
+    if (distanceFromBottom <= 10 && !this.isLoadingMore && this.hasMoreData && !this.isLoading) {
+      this.currentPage++;
+      this.loadProducts(false);
+    }
+  }
+
   // Filter actions
   onSearchChange() {
-    this.currentPage = 1;
-    this.loadProducts();
+    this.loadProducts(true);
   }
 
   clearSearch() {
     this.searchQuery = '';
-    this.currentPage = 1;
-    this.loadProducts();
+    this.loadProducts(true);
   }
 
   selectCategory(categoryName: string) {
     this.selectedCategory = categoryName === this.selectedCategory ? '' : categoryName;
-    this.currentPage = 1;
-    this.loadProducts();
+    this.loadProducts(true);
   }
 
   selectSort(sort: 'terbaru' | 'termurah' | 'termahal') {
     this.selectedSort = sort;
-    this.currentPage = 1;
-    this.loadProducts();
+    this.loadProducts(true);
   }
 
   toggleFilters() {
@@ -134,8 +167,7 @@ export class ProductsPage implements OnInit {
     this.searchQuery = '';
     this.selectedCategory = '';
     this.selectedSort = 'terbaru';
-    this.currentPage = 1;
-    this.loadProducts();
+    this.loadProducts(true);
   }
 
   // Helper methods

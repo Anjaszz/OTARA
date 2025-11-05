@@ -56,7 +56,7 @@ export class CategoriesPage implements OnInit {
     const categoryMap: { [key: string]: string } = {
       'Makanan': 'assets/category/Food.svg',
       'Minuman': 'assets/category/Drink.svg',
-      'Fashion & Pakaian': 'assets/category/Fashion.png',
+      'Fashion & Aksesoris': 'assets/category/Fashion.png',
       'Kerajian Tangan': 'assets/category/Handicraft.png',
       'Produk Kecantikan & Perawatan Diri': 'assets/category/Beauty.png'
     };

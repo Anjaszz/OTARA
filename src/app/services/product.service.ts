@@ -75,8 +75,8 @@ export class ProductService {
   }
 
   // Get all seller products
-  getSellerProducts(): Observable<ProductResponse> {
-    return this.http.get<ProductResponse>(`${this.apiUrl}/seller/products`, {
+  getSellerProducts(page: number = 1, limit: number = 20): Observable<ProductResponse> {
+    return this.http.get<ProductResponse>(`${this.apiUrl}/seller/products?page=${page}&limit=${limit}`, {
       headers: this.getHeaders()
     });
   }
